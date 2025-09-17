@@ -1,0 +1,37 @@
+💄 Sistematización Beauty Company
+
+Este proyecto busca **sistematizar los procesos de la empresa Beauty Company**, ofreciendo herramientas digitales que faciliten la gestión de clientes, productos y servicios.
+
+---
+
+## 🚀 Tecnologías utilizadas
+- ⚙️ Java / JavaFX → interfaz gráfica y lógica del sistema  
+- 🗄️ MySQL / MongoDB → gestión de base de datos  
+- 🔐 OWASP Guidelines → seguridad y validaciones  
+- 🔄 Git + GitHub → control de versiones y colaboración  
+
+---
+
+## 📂 Estructura del proyecto
+📦 Sistematización-Beauty-Company  
+┣ 📂 src/        # Código fuente  
+┣ 📂 docs/       # Documentación  
+┣ 📂 assets/     # Imágenes, íconos u otros recursos  
+┗ 📜 README.md   # Este archivo  
+
+---
+
+## ⚙️ Instalación y uso
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/juandsolina/Sistematizacion-Beauty-Company.git 
+
+Abrir el proyecto en tu IDE (NetBeans, IntelliJ, VS Code, etc.).
+
+Configurar la base de datos (si aplica).
+
+Ejecutar la aplicación 🚀. 
+
+GitHub: https://github.com/juandsolina
+
+
