@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SusanaTiendaBogotá</title>
+
+  <!-- Boxicons -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <!-- Estilos del catálogo (tu CSS original) -->
+  <link rel="stylesheet" href="css/catalogo.css"> <!-- :contentReference[oaicite:1]{index=1} -->
+
+  <!-- Estilos específicos del carrito (solo lo necesario) -->
+  <link rel="stylesheet" href="css/carrito.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <i class='bx bx-user' aria-hidden="true"></i>
+    <h1>SusanaTiendaBogotá</h1>
+  </div>
+</header>
+
+<main>
+  <!-- Este contenedor está estilado por catalogo.css -->
+  <div id="productos" aria-live="polite"></div>
+</main>
+
+<!-- Botón fijo del carrito -->
+<button class="cart-btn" id="openCart" aria-label="Abrir carrito">
+  <i class='bx bx-cart' aria-hidden="true"></i>
+  <span class="cart-label">Carrito</span>
+  <span class="badge" id="cartCount">0</span>
+</button>
+
+<!-- Sidebar del carrito -->
+<aside class="cart-sidebar" id="cartSidebar" aria-hidden="true">
+  <div class="cart-header">
+    <h3>Tu carrito</h3>
+    <button id="closeCart" aria-label="Cerrar carrito"><i class='bx bx-x' aria-hidden="true"></i></button>
+  </div>
+
+  <div class="cart-items" id="cartItems"></div>
+
+  <div class="cart-footer">
+    <div>
+      <small>Total</small>
+      <div id="cartTotal">$0.00</div>
+    </div>
+    <div class="cart-actions">
+      <button class="checkout-btn" id="checkoutBtn">Pagar</button>
+      <button id="clearCart">Vaciar</button>
+    </div>
+  </div>
+</aside>
+
+<!-- Lógica del carrito (usa defer para que el DOM ya exista) -->
+<script src="js/carrito.js" defer></script>
+</body>
+</html>

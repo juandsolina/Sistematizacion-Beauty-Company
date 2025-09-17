@@ -1,0 +1,43 @@
+document.getElementById("register-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirm-password").value;
+  const errorMessage = document.getElementById("error-message");
+
+  errorMessage.textContent = "";
+
+  if (password !== confirmPassword) {
+    errorMessage.textContent = "⚠️ Las contraseñas no coinciden.";
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:8080/api/auth/register.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: email,
+        nombre: username,
+        password: password,
+        rol: "cliente" // 👈 opcional, puedes cambiar según quieras
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.status === "success") {
+      alert("✅ Registro exitoso, ahora inicia sesión.");
+      window.location.href = "login.html";
+    } else {
+      errorMessage.textContent = "⚠️ " + data.mensaje;
+    }
+  } catch (err) {
+    console.error("Error de conexión:", err);
+    errorMessage.textContent = "❌ No se pudo conectar con el servidor.";
+  }
+});

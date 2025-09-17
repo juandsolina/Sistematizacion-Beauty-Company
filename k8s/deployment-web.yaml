@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-web
+  namespace: miweb
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: php-web
+  template:
+    metadata:
+      labels:
+        app: php-web
+    spec:
+      containers:
+        - name: php-web
+          image: docker-web:latest   # 👈 tu imagen local
+          imagePullPolicy: Never     # 👈 fuerza a usar solo la imagen de Minikube
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_HOST
+              value: mysql.miweb.svc.cluster.local
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_DATABASE
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_PASSWORD
+          volumeMounts:
+            - name: uploads
+              mountPath: /var/www/html/uploads
+      volumes:
+        - name: uploads
+          emptyDir: {}

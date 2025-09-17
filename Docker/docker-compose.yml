@@ -1,0 +1,51 @@
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: Docker/Dockerfile
+    container_name: php-web
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    volumes:
+      # frontend (HTML, CSS, JS)
+      - ../public:/var/www/html
+
+      # backend (API PHP)
+      - ../src/api:/var/www/html/api
+
+      # opcional: montar src entero para desarrollo,
+      # pero no será accesible en el navegador
+      - ../src:/var/www/src
+
+  db:
+    image: mysql:8
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: tienda
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root123
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:

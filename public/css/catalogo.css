@@ -1,0 +1,30 @@
+/* Contenedor de productos */
+.shop-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    padding: 30px;
+}
+
+/* Tarjetas */
+.producto-card {
+    background: #1c1c1c;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: transform 0.3s;
+}
+
+.producto-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Imágenes uniformes */
+.producto-card img {
+    width: 160px;          /* 👈 ancho fijo */
+    height: 160px;         /* 👈 alto fijo */
+    object-fit: cover;     /* 👈 recorta para mantener proporción */
+    border-radius: 12px;
+    margin-bottom: 15px;
+}

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb
+  namespace: miweb
+data:
+  init.sql: |
+    -- pega aquí el contenido de Docker/init.sql (tu init.sql)
+    -- ejemplo:
+    CREATE TABLE IF NOT EXISTS productos (...);
+    -- etc
