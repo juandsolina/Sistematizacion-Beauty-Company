@@ -1,29 +1,18 @@
-# ---------- BUILDER ----------
-FROM node:20-slim AS build
+FROM node:20-slim
 
 WORKDIR /app
 
-# Copiar archivos de dependencias
+# Copiar package.json y package-lock.json
 COPY package*.json ./
 
-# Instalar dependencias (incluyendo devDependencies para el build)
-RUN npm ci
+# Instalar solo dependencias de producción
+RUN npm ci --only=production
 
-# Copiar código fuente
+# Copiar el resto del código
 COPY . .
 
-# Build con Vite
-RUN npm run build
+# Exponer el puerto del backend
+EXPOSE 3000
 
-# ---------- RUNTIME ----------
-FROM nginx:alpine
-
-# Copiar configuración de nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copiar los archivos compilados desde el builder
-COPY --from=build /app/dist /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Comando para iniciar el servidor
+CMD ["npm", "start"]

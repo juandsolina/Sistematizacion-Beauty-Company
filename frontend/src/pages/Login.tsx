@@ -16,7 +16,8 @@ type ApiResponse = {
   };
 };
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
+// ✅ CORRECCIÓN: API_BASE ya incluye /api desde el .env
+const API_BASE = import.meta.env.VITE_API_URL || "/api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -51,11 +52,12 @@ export default function Login() {
         password: password,
       };
 
-      console.log('🔄 Intentando login en:', `${API_BASE}/api/auth/login`);
+      // ✅ CORRECCIÓN: Removido /api/ porque API_BASE ya lo incluye
+      console.log('🔄 Intentando login en:', `${API_BASE}/auth/login`);
       console.log('📦 Payload:', { email: payload.email, password: '***' });
 
       const { data } = await axios.post<ApiResponse>(
-        `${API_BASE}/api/auth/login`,
+        `${API_BASE}/auth/login`, // ✅ Solo /auth/login, sin /api
         payload,
         { 
           withCredentials: true,
@@ -123,7 +125,7 @@ export default function Login() {
         }
       } else if (err?.request) {
         // La petición se hizo pero no hubo respuesta
-        msg = "No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:3000";
+        msg = "No se pudo conectar con el servidor. Verifica que el backend esté corriendo.";
       }
 
       setErrorMessage(msg);

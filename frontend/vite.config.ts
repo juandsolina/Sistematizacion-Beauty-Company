@@ -20,12 +20,8 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        // NO reescribir, mantener /api
       }
     }
   },
-  build: {
-    outDir: 'dist',
-    sourcemap: false,
-  }
 });
