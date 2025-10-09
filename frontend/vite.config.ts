@@ -7,13 +7,25 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      react: path.resolve("./node_modules/react"), // 👈 fuerza una sola copia
-      "react-dom": path.resolve("./node_modules/react-dom") // 👈 igual
+      react: path.resolve("./node_modules/react"),
+      "react-dom": path.resolve("./node_modules/react-dom")
     },
     dedupe: ["react", "react-dom"]
   },
   server: {
     port: 5173,
-    host: true
+    host: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+  }
 });
