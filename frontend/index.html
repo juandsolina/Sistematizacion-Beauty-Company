@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SusanaTiendaBogotá - Productos de Belleza para Uñas</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Tienda especializada en productos de belleza para uñas en Bogotá. Encuentra todo lo que necesitas para lucir unas uñas perfectas." />
+    <meta name="keywords" content="uñas, belleza, manicura, Bogotá, productos belleza" />
+    <meta name="author" content="SusanaTiendaBogotá" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SusanaTiendaBogotá - El encanto comienza en tus manos" />
+    <meta property="og:description" content="Descubre la magia de unas uñas perfectas con nuestros productos de alta calidad" />
+    <meta property="og:image" content="/Logotienda.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/Logotienda.png" />
+    <link rel="apple-touch-icon" href="/Logotienda.png" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Boxicons -->
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- CSS Base -->
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #1a1a1a;
+        color: #ffffff;
+        overflow-x: hidden;
+      }
+
+      /* Loading spinner mientras carga React */
+      #root {
+        min-height: 100vh;
+      }
+
+      .loading {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+
+      .loading i {
+        font-size: 48px;
+        color: #ff1493;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Scrollbar personalizado */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #1a1a1a;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #ff1493;
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #e01280;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Root donde se monta React -->
+    <div id="root">
+      <!-- Loading inicial -->
+      <div class="loading">
+        <i class='bx bx-loader-alt'></i>
+        <p style="margin-top: 20px; color: #ff1493;">Cargando SusanaTiendaBogotá...</p>
+      </div>
+    </div>
+
+    <!-- Script principal de React -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: susana-shop  # ✅ Actualizado
+  labels:
+    app: mysql
+spec:
+  accessModes: 
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  # ✅ Storage class para mejor compatibilidad
+  # storageClassName: standard  # Descomenta si tu cluster lo requiere

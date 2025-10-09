@@ -1,0 +1,196 @@
+/* ================================
+   CATALOGO - SUSANATIENDABOGOTÁ
+================================ */
+
+/* Contenedor principal del catálogo */
+.catalogo-page {
+  min-height: 100vh;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Contenedor general */
+.catalogo-wrap {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(10px, 3vw, 28px) 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ================================
+   HERO SECTION
+================================ */
+.catalogo-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* 👈 pegado arriba */
+  align-items: center;
+  text-align: center;
+  padding-top: 50px; /* espacio desde el header */
+  padding-bottom: 60px;
+}
+
+.catalogo-hero-content h4 {
+  color: #ff1493;
+  font-size: 18px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.catalogo-hero-content h1 {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 30px;
+}
+
+.btn-agregar {
+  display: inline-block;
+  background: #ff1493;
+  color: #fff;
+  padding: 14px 32px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-agregar:hover {
+  background: #ff69b4;
+  transform: translateY(-2px);
+}
+
+/* ================================
+   PRODUCTS GRID
+================================ */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+/* ================================
+   PRODUCT CARD
+================================ */
+.product-card {
+  background: #1c1c1c;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(255, 20, 147, 0.3);
+}
+
+.product-image {
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  background: #2a2a2a;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.1);
+}
+
+.product-info {
+  padding: 24px;
+}
+
+.product-info h3 {
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.tienda-desc {
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.product-price {
+  color: #ff1493;
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.btn-add-cart {
+  width: 100%;
+  background: #ff1493;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-add-cart:hover {
+  background: #ff69b4;
+  transform: translateY(-2px);
+}
+
+/* ================================
+   FOOTER
+================================ */
+.catalogo-footer {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.btn-volver {
+  display: inline-block;
+  background: transparent;
+  color: #ff1493;
+  border: 2px solid #ff1493;
+  padding: 14px 32px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn-volver:hover {
+  background: #ff1493;
+  color: #fff;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .catalogo-hero {
+    padding-top: 80px; /* menos espacio en móvil */
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  
+  .product-image {
+    height: 200px;
+  }
+}

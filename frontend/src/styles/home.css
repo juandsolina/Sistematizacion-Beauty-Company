@@ -1,0 +1,54 @@
+/* --- HERO: separación del header y layout --- */
+.home-hero{
+  --header-space: clamp(420px, 28vw, 640px); /* ← AUMENTADO para más separación */
+  padding-top: var(--header-space);
+  padding-left: clamp(16px, 3vw, 28px);
+  padding-right: clamp(16px, 3vw, 28px);
+}
+
+.hero-inner{
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr; /* imagen / texto */
+  gap: clamp(16px, 3vw, 40px);
+  align-items: center;
+}
+
+/* Imagen a la izquierda */
+.hero-media{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background:#0f0f14;
+  overflow: hidden;
+  border-radius: 14px;
+}
+.hero-media img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* que llene sin deformarse */
+  object-position: center;
+}
+
+/* Texto a la derecha */
+.hero-copy h1{
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+  font-size: clamp(36px, 6vw, 72px); /* grande como en la captura */
+  margin: 0 0 14px;
+}
+.hero-copy p{
+  color: #d7d9e3;
+  font-size: clamp(14px, 1.8vw, 18px);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Responsive: apilar en móviles */
+@media (max-width: 900px){
+  .hero-inner{ grid-template-columns: 1fr; }
+  .hero-media{ order: -1; } /* imagen arriba, texto abajo */
+  .home-hero{ --header-space: clamp(500px, 32vw, 720px); } /* ← TAMBIÉN aumentado para móviles */
+}

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: susana-shop  # ✅ Cambiado de "tienda" a "susana-shop"
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  DB_HOST: "mysql"  # ✅ Nombre del servicio de MySQL
+  DB_PORT: "3306"
+  DB_NAME: "tienda"  # ⚠️ ¿Quieres cambiar esto a "susana_shop"?
+  JWT_EXPIRES_IN: "7d"
+  # Variables de email (vacías por ahora)
+  EMAIL_HOST: ""
+  EMAIL_PORT: "587"
+  EMAIL_USER: ""
+  EMAIL_PASSWORD: ""

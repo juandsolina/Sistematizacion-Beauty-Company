@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-init-sql
+  namespace: susana-shop
+  labels:
+    app: mysql
+data:
+  init.sql: |
+    -- Crear base de datos
+    CREATE DATABASE IF NOT EXISTS tienda;
+    USE tienda;
+
+    -- Crear tabla de usuarios con campo rol
+    CREATE TABLE IF NOT EXISTS usuarios (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(100) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        rol ENUM('admin','cliente') DEFAULT 'cliente',
+        creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- Crear tabla de productos
+    CREATE TABLE IF NOT EXISTS productos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nombre VARCHAR(150) NOT NULL,
+        descripcion TEXT,
+        precio DECIMAL(10,2) NOT NULL,
+        stock INT DEFAULT 0,
+        imagen VARCHAR(255),
+        creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- Crear tabla de carrito
+    CREATE TABLE IF NOT EXISTS carrito (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        producto_id INT NOT NULL,
+        cantidad INT NOT NULL,
+        agregado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+        FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
+    );
+
+    -- Crear tabla de pedidos
+    CREATE TABLE IF NOT EXISTS pedidos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        total DECIMAL(10,2) NOT NULL,
+        estado ENUM('pendiente','pagado','enviado','completado','cancelado') DEFAULT 'pendiente',
+        creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+    );
+
+    -- Crear tabla detalle de pedidos
+    CREATE TABLE IF NOT EXISTS detalle_pedidos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        pedido_id INT NOT NULL,
+        producto_id INT NOT NULL,
+        cantidad INT NOT NULL,
+        precio DECIMAL(10,2) NOT NULL,
+        FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
+        FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
+    );
+
+    -- Insertar usuario administrador inicial (contraseña bcrypt de "admin123")
+    INSERT INTO usuarios (nombre, email, password, rol) VALUES
+    ('Administrador', 'admin@tienda.com', '$2b$10$VEEsl9MyJrFgO6Y6m/RcaOrp6kR.NxQPcGjTfQkLM5q8vO0C6pA8e', 'admin')
+    ON DUPLICATE KEY UPDATE email = email;
+
+    -- Insertar algunos productos de ejemplo
+    INSERT INTO productos (nombre, descripcion, precio, stock, imagen) VALUES
+    ('Pulidor de Uñas Profesional', 'Pulidor eléctrico de uñas con accesorios y cargador incluido.', 220.00, 15, 'uploads/master.png'),
+    ('Cepillos Descartables', 'Cepillos desechables para uso cosmético y de pestañas.', 25.00, 100, 'uploads/mcepillos.png'),
+    ('Olla de Cera Eléctrica', 'Olla eléctrica portátil para derretir cera depilatoria.', 120.00, 20, 'uploads/ollita-de-cera.png'),
+    ('Lámpara LED de Escritorio', 'Lámpara LED flexible recargable para escritorio.', 60.00, 30, 'uploads/presson.png'),
+    ('Pulidor de Uñas Premium', 'Pulidor profesional de alta potencia para manicure y pedicure.', 350.00, 10, 'uploads/pulidor.png'),
+    ('Pulidor Portátil Rosa', 'Pulidor recargable de uñas en formato compacto.', 180.00, 25, 'uploads/pulidorp2.png'),
+    ('Pestañas Venus', 'Extensiones de pestañas estilo natural marca Venus.', 90.00, 40, 'uploads/venus.png'),
+    ('Cinta Adhesiva para Pestañas', 'Rollo de cinta adhesiva especial para extensiones de pestañas.', 15.00, 200, 'uploads/vpestanas.png'),
+    ('Mini Ventilador Portátil', 'Ventilador portátil de mano recargable en varios colores.', 75.00, 35, 'uploads/vpestanas2.png')
+    ON DUPLICATE KEY UPDATE nombre = nombre;

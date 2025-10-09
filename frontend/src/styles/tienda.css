@@ -1,0 +1,173 @@
+/* ---------- VARIABLES DE TEMA ---------- */
+:root{
+  --page-max: 1200px;
+  --space-x: clamp(50px, 30px, 28px);
+  --space-top: clamp(100px, 20px, 200px); /* más separado del header */
+
+  --card-bg: #181820;          /* color agradable y suave */
+  --card-border: rgba(255,255,255,.08);
+  --card-shadow: 0 10px 26px rgba(0,0,0,.22);
+  --card-shadow-hover: 0 14px 34px rgba(0,0,0,.28);
+
+  --title: #ffffff;
+  --muted: #c9cede;
+  --divider: rgba(255,255,255,.06);
+
+  --accent: #f00898;           /* rosa de tu marca */
+  --accent-hover: #cc067f;
+  --price: #ff3ca2;
+}
+
+/* ---------- CONTENEDOR GENERAL ---------- */
+.tienda-wrap{
+  padding-top: var(--space-top);            /* ↓ más distancia del header */
+  padding-left: var(--space-x);
+  padding-right: var(--space-x);
+  margin-left: auto; margin-right: auto;
+  max-width: var(--page-max);
+}
+
+.tienda-h1{
+  margin: 0 0 22px;
+  font-weight: 800;
+  font-size: clamp(24px, 3.2vw, 34px);
+  color: #fff;
+  text-align: center;
+}
+
+/* ---------- GRID ---------- */
+.tienda-grid{
+  display: grid;
+  gap: clamp(16px, 2.2vw, 24px);
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+}
+
+/* ---------- CARD ---------- */
+.tienda-card{
+  display: flex; flex-direction: column;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.tienda-card:hover{
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: rgba(255,255,255,.12);
+}
+
+/* ---------- MEDIA (no deformar) ---------- */
+.tienda-media{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: #0f0f14;
+  border-bottom: 1px solid var(--divider);
+}
+@supports not (aspect-ratio: 4 / 3){
+  .tienda-media{ padding-top: 75%; }
+}
+.tienda-img{
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  transform: scale(1);
+  transition: transform .25s ease;
+}
+.tienda-card:hover .tienda-img{ transform: scale(1.03); }
+
+/* ---------- CUERPO ---------- */
+.tienda-body{
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 16px;
+}
+.tienda-title{
+  margin: 0;
+  color: var(--title);
+  font-weight: 800;
+  font-size: clamp(16px, 2.3vw, 18px);
+  line-height: 1.2;
+  min-height: 2.6em; /* ~2 líneas */
+}
+
+/* DESCRIPCIÓN CLAMPEADA (compatible) */
+.tienda-desc{
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+
+  max-height: calc(1.45em * 2);
+}
+@supports not (-webkit-line-clamp: 2) {
+  .tienda-desc{ position: relative; }
+  .tienda-desc::after{
+    content:"";
+    position:absolute; right:0; bottom:0; width:45%;
+    height:1.4em;
+    background: linear-gradient(to right, rgba(24,24,32,0), var(--card-bg));
+  }
+}
+
+/* ---------- PRECIO + BOTÓN ---------- */
+.tienda-bottom{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.tienda-price{
+  color: var(--price);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: .2px;
+}
+.tienda-btn{
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-weight: 800;
+  font-size: 14px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform .1s ease, background .2s ease, border-color .2s ease;
+  min-width: 150px;
+  text-align: center;
+}
+.tienda-btn.ok{ background: var(--accent); }
+.tienda-btn.ok:hover{ background: var(--accent-hover); transform: translateY(-1px); }
+.tienda-btn.off{
+  background: #7c8193;
+  color: #f0f1f6;
+  cursor: not-allowed;
+  border-color: rgba(255,255,255,.08);
+}
+
+/* ---------- MÓVIL ---------- */
+@media (max-width: 480px){
+  .tienda-bottom{ grid-template-columns: 1fr; }
+  .tienda-btn{ width: 100%; min-width: 0; }
+}
+.tienda-foot{
+  margin-top: auto;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+} 
+/* Anti-overlay por si algún contenedor tapa el botón */
+.tienda-card, .tienda-body, .tienda-foot, .tienda-btn {
+  position: relative;
+}
+.tienda-btn {
+  z-index: 5;
+  pointer-events: auto; /* por si algún reset lo desactiva */
+}
+.tienda-media::after { pointer-events: none; } /* si usas overlays decorativos */
