@@ -30,7 +30,7 @@ export async function query<T = any>(sql: string, params?: any[]): Promise<T> {
     console.error("SQL ERROR →", { sql, params, message: err?.message });
     throw err;
   }
-}
+} 
 
 export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T | null> {
   const rows = await query<T[]>(sql, params);
