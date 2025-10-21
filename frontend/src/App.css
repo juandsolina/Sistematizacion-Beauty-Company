@@ -1,3 +1,6 @@
+/* ========================================
+   RESET Y VARIABLES
+   ======================================== */
 * {
     padding: 0;
     margin: 0;
@@ -24,116 +27,16 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
-/* Header */
-header {
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.85) 100%);
-    backdrop-filter: blur(15px);
-    padding: 25px 12%;
-    transition: all 0.5s ease;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-}
-
-header.sticky {
-    background: rgba(0, 0, 0, 0.98);
-    padding: 18px 12%;
-    box-shadow: 0px 5px 20px rgba(233, 30, 99, 0.4);
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    font-size: 30px;
-    font-weight: 700;
-    color: var(--text-color);
-}
-
-.logo i {
-    color: var(--main-color);
-    font-size: 32px;
-    margin-right: 5px;
-}
-
-.navlist {
-    display: flex;
-    gap: 15px;
-}
-
-.navlist a {
-    color: var(--text-color);
-    font-size: 16px;
-    font-weight: 500;
-    padding: 8px 20px;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-}
-
-.navlist a:hover {
-    color: var(--main-color);
-    background: rgba(233, 30, 99, 0.1);
-}
-
-.navlist a.active {
-    color: var(--main-color);
-    background: rgba(233, 30, 99, 0.15);
-}
-
-.nav-icons {
-    display: flex;
-    align-items: center;
-}
-
-.nav-icons i {
-    margin-right: 25px;
-    font-size: 28px;
-    color: var(--text-color);
-    cursor: pointer;
-    transition: all 0.5s ease;
-}
-
-.nav-icons i:hover {
-    transform: scale(1.1);
-    color: var(--main-color);
-}
-
-#menu-icon {
-    font-size: 35px;
-    color: var(--text-color);
-    z-index: 10001;
-    cursor: pointer;
-    display: none;
-}
-
-#logout-btn {
-    background: var(--main-color);
-    color: var(--text-color);
-    padding: 10px 25px;
-    border: none;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.5s ease;
-    margin-right: 20px;
-}
-
-#logout-btn:hover {
-    background: var(--second-color);
-    transform: scale(1.05);
-}
-
-/* Home Section */
+/* ========================================
+   SECTIONS BASE
+   ======================================== */
 section {
     padding: 0 12%;
 }
 
+/* ========================================
+   HOME SECTION
+   ======================================== */
 .home {
     position: relative;
     min-height: 100vh;
@@ -142,7 +45,7 @@ section {
     grid-template-columns: 1fr 1fr;
     align-items: center;
     gap: 4rem;
-    padding-top: 300px; /* ← CAMBIADO de 100px a 300px */
+    padding-top: 300px;
     padding-bottom: 50px;
 }
 
@@ -177,6 +80,9 @@ section {
     object-fit: contain;
 }
 
+/* ========================================
+   BUTTONS
+   ======================================== */
 .btn {
     display: inline-block;
     padding: 15px 35px;
@@ -218,7 +124,9 @@ section {
     transform: translateY(-5px);
 }
 
-/* Container Section */
+/* ========================================
+   CONTAINER SECTION
+   ======================================== */
 .container,
 .cards-grid {
     display: grid;
@@ -265,7 +173,9 @@ section {
     color: var(--second-color);
 }
 
-/* About Section - AJUSTES PRINCIPALES */
+/* ========================================
+   ABOUT SECTION
+   ======================================== */
 .about {
     display: grid;
     grid-template-columns: 380px 1fr;
@@ -324,7 +234,9 @@ section {
     text-align: justify;
 }
 
-/* Shop Section */
+/* ========================================
+   SHOP SECTION
+   ======================================== */
 .shop {
     padding: 80px 12%;
 }
@@ -438,7 +350,9 @@ section {
     margin-top: 50px;
 }
 
-/* Reviews Section */
+/* ========================================
+   REVIEWS SECTION
+   ======================================== */
 .reviews {
     padding: 80px 12% 40px;
 }
@@ -501,7 +415,9 @@ section {
     margin-right: 3px;
 }
 
-/* Contact Section */
+/* ========================================
+   CONTACT SECTION
+   ======================================== */
 .contact {
     padding: 80px 12%;
     background: var(--other-color);
@@ -583,7 +499,9 @@ section {
     margin-right: 15px;
 }
 
-/* Scroll Button */
+/* ========================================
+   SCROLL BUTTON
+   ======================================== */
 .scroll {
     position: fixed;
     bottom: 2.2rem;
@@ -608,11 +526,10 @@ section {
     color: var(--text-color);
 }
 
-/* Responsive */
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
 @media (max-width: 1400px) {
-    header {
-        padding: 20px 5%;
-    }
     section {
         padding: 0 5%;
     }
@@ -624,15 +541,12 @@ section {
 }
 
 @media (max-width: 1024px) {
-    header {
-        padding: 15px 3%;
-    }
     section {
         padding: 0 3%;
     }
     .home {
         gap: 2rem;
-        padding-top: 250px; /* ← AJUSTADO para tablets */
+        padding-top: 250px;
     }
     .about {
         grid-template-columns: 1fr;
@@ -658,34 +572,10 @@ section {
 }
 
 @media (max-width: 768px) {
-    #menu-icon {
-        display: block;
-    }
-    .navlist {
-        position: absolute;
-        top: 100%;
-        right: -100%;
-        width: 300px;
-        height: 100vh;
-        background: var(--other-color);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 50px 20px;
-        transition: all 0.5s ease;
-    }
-    .navlist.active {
-        right: 0;
-    }
-    .navlist a {
-        display: block;
-        margin: 15px 0;
-        font-size: 20px;
-    }
     .home {
         grid-template-columns: 1fr;
         gap: 2rem;
-        padding-top: 220px; /* ← AJUSTADO para móviles */
+        padding-top: 220px;
     }
     .about {
         grid-template-columns: 1fr;
@@ -726,6 +616,6 @@ section {
         grid-template-columns: 1fr;
     }
     .home {
-        padding-top: 200px; /* ← AJUSTADO para móviles pequeños */
+        padding-top: 200px;
     }
 }

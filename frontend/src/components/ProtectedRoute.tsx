@@ -1,56 +1,59 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
-// 1. Definimos una función para 'leer' el estado de autenticación
-// En una app real, esto estaría en un "Contexto" o "Store" global
-const useAuth = () => {
-  const userString = localStorage.getItem('user');
-  
-  if (!userString) {
-    return { isLoggedIn: false, role: null };
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  adminOnly?: boolean; // Si es true, solo admins pueden acceder
+}
+
+export default function ProtectedRoute({ children, adminOnly = false }: ProtectedRouteProps) {
+  const token = localStorage.getItem('token');
+  const userStr = localStorage.getItem('user');
+
+  // Si no hay token, redirigir a login
+  if (!token) {
+    console.log('❌ No hay token, redirigiendo a /login');
+    return <Navigate to="/login" replace />;
+  }
+
+  // Si no hay información del usuario, redirigir a login
+  if (!userStr) {
+    console.log('❌ No hay usuario en localStorage, redirigiendo a /login');
+    return <Navigate to="/login" replace />;
   }
 
   try {
-    const user = JSON.parse(userString) as { role: string };
-    return { isLoggedIn: true, role: user.role };
-  } catch (e) {
-    // Si hay datos corruptos, los limpiamos
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    return { isLoggedIn: false, role: null };
-  }
-};
+    const user = JSON.parse(userStr);
+    
+    console.log('🔍 ProtectedRoute - Usuario:', user);
+    console.log('🔍 ProtectedRoute - adminOnly:', adminOnly);
+    console.log('🔍 ProtectedRoute - Rol del usuario:', user.rol);
+    
+    // Verificar que el usuario tenga un rol
+    if (!user.rol) {
+      console.warn('⚠️ Usuario sin rol detectado');
+      localStorage.clear();
+      return <Navigate to="/login" replace />;
+    }
 
-// 2. Definimos las 'props' que recibirá nuestro guardián
-interface ProtectedRouteProps {
-  children: React.ReactNode; // La página que queremos proteger (ej. <AdminDashboard />)
-  adminOnly?: boolean;      // ¿Esta ruta es SOLO para admins?
+    const userRol = user.rol.trim().toLowerCase();
+    
+    // Si se requiere que sea admin
+    if (adminOnly) {
+      if (userRol !== 'admin') {
+        console.log(`❌ Acceso denegado a ruta de admin. Usuario es: ${user.rol}`);
+        return <Navigate to="/tienda" replace />;
+      }
+      console.log('✅ Acceso autorizado a ruta de admin');
+    } else {
+      // Para rutas que requieren login pero no necesariamente admin
+      console.log(`✅ Acceso autorizado para usuario: ${user.nombre} (${user.rol})`);
+    }
+
+    return <>{children}</>;
+    
+  } catch (error) {
+    console.error('❌ Error al parsear usuario:', error);
+    localStorage.clear();
+    return <Navigate to="/login" replace />;
+  }
 }
-
-// 3. El componente Guardián
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly = false }) => {
-  const { isLoggedIn, role } = useAuth();
-  const location = useLocation(); // Para saber dónde estaba el usuario
-
-  // ----- Lógica de decisión -----
-
-  // Caso 1: El usuario NO está logueado
-  if (!isLoggedIn) {
-    // Lo mandamos al login. Guardamos la 'location' para poder
-    // regresarlo a donde quería ir después de iniciar sesión.
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  // Caso 2: El usuario SÍ está logueado, pero la ruta es SOLO para admins
-  if (adminOnly && role !== 'admin') {
-    // El usuario es un cliente intentando entrar a /admin
-    // Lo mandamos a la página de inicio (o a "acceso denegado")
-    return <Navigate to="/" replace />;
-  }
-  
-  // Caso 3: ¡Éxito! El usuario está logueado Y tiene los permisos.
-  // Mostramos la página que estaba protegida.
-  return <>{children}</>;
-};
-
-export default ProtectedRoute;

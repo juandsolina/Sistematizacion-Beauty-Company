@@ -14,7 +14,7 @@ import Tienda from "./pages/Tienda";
 import Clientes from "./pages/Clientes";
 import Contacto from "./pages/Contacto";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Register from "./pages/Register"; 
 
 // --- NUEVOS Componentes Protegidos ---
 import ProtectedRoute from "./components/ProtectedRoute";    // 1. El guardián

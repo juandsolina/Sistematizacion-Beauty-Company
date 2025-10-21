@@ -1,8 +1,8 @@
-import { query } from '../config/database';
-import { hashPassword, comparePassword } from '../utils/hash';
+import { hashPassword, comparePassword } from '../../backend/src/utils/hash';
+import { query } from '../../backend/src/config/database'; // This import is already correct
 const jwt = require('jsonwebtoken');
-import { config } from '../config/config';
-import crypto from 'crypto';
+import { config } from '../../backend/src/config/config';
+import crypto from 'crypto'; // This import is already correct
 
 export class AuthService {
   static async register(nombre: string, email: string, password: string) {

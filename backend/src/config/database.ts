@@ -1,14 +1,16 @@
 // src/config/database.ts
-import mysql from "mysql2/promise";
+import mysql, { Pool, RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import dotenv from "dotenv";
+
+// Al final de src/config/database.ts, agrega:
 dotenv.config();
 
-const num = (v: string | undefined, fb: number) => {
+const num = (v: string | undefined, fb: number): number => {
   const n = Number(v);
   return Number.isFinite(n) ? n : fb;
 };
 
-export const pool = mysql.createPool({
+export const pool: Pool = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "",
@@ -16,7 +18,7 @@ export const pool = mysql.createPool({
   port: num(process.env.DB_PORT, 3306),
   waitForConnections: true,
   connectionLimit: 10,
-  charset: "utf8mb4",          // ✅ asegura UTF-8 real (tildes/ñ/emojis)
+  charset: "utf8mb4",
   supportBigNumbers: true,
   decimalNumbers: true,
 });
@@ -24,20 +26,22 @@ export const pool = mysql.createPool({
 export async function query<T = any>(sql: string, params?: any[]): Promise<T> {
   try {
     const useParams = Array.isArray(params) && params.length > 0;
-    const [rows] = useParams ? await pool.execute(sql, params!) : await pool.query(sql);
+    const [rows] = useParams 
+      ? await pool.execute(sql, params) 
+      : await pool.query(sql);
     return rows as T;
   } catch (err: any) {
     console.error("SQL ERROR →", { sql, params, message: err?.message });
     throw err;
   }
-} 
+}
 
 export async function queryOne<T = any>(sql: string, params?: any[]): Promise<T | null> {
   const rows = await query<T[]>(sql, params);
   return rows.length ? rows[0] : null;
 }
 
-// Test e inicialización de sesión
+// Test e inicialización
 pool
   .getConnection()
   .then(async (c) => {
@@ -45,4 +49,9 @@ pool
     console.log("✅ Conexión a base de datos exitosa");
     c.release();
   })
-  .catch((err) => console.error("❌ Error conectando a la base de datos:", err));
+  .catch((err: any) => {
+    console.error("❌ Error conectando a la base de datos:", err);
+  });
+
+// Exportación por defecto
+export default pool;

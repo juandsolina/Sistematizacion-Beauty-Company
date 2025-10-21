@@ -15,7 +15,7 @@ type ApiResponse = {
   };
 };
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_URL || "";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -59,7 +59,8 @@ export default function Register() {
       const payload = {
         nombre: username.trim(),
         email: email.trim(),
-        password: password,
+        password: password.trim(),
+        rol: "cliente" // ✅ Debe coincidir exactamente con el ENUM en la BD
       };
 
       console.log('🔄 Intentando registro en:', `${API_BASE}/api/auth/register`);
