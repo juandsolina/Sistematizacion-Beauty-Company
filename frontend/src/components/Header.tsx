@@ -124,9 +124,16 @@ export default function Header() {
             Contactar
           </a>
         </li>
+        
+        {/* 🔧 Enlace de Admin - Solo visible para administradores */}
         {isAuthenticated && isAdmin && (
           <li>
-            <Link to="/admin">Gestión</Link>
+            <Link 
+              to="/admin"
+              className={location.pathname === "/admin" ? "active" : ""}
+            >
+              Admin
+            </Link>
           </li>
         )}
       </ul>

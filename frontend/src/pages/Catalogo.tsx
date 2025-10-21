@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import "../styles/catalogo.css";
 
 interface Producto {
   id: number;
@@ -47,58 +48,55 @@ export default function Catalogo() {
 
   return (
     <div className="catalogo-page">
-      {/* Espaciador para alejar del header */}
-      <div style={{ height: "400px" }} />
-
       <div className="catalogo-wrap">
         {/* Hero Section */}
         <section className="catalogo-hero">
           <div className="catalogo-hero-content">
-            <h4>SusanaTiendaBogotá</h4>
+            <h4>SUSANATIENDABOGOTÁ</h4>
             <h1>Bienvenido(a) al catálogo</h1>
             <Link to="/admin/productos" className="btn-agregar">
-              Agregar productos ▶
+              <i className="bx bx-plus-circle"></i>
+              Agregar productos
             </Link>
           </div>
         </section>
 
         {/* Products Grid */}
-        <section className="catalogo-products">
-          <div className="products-grid">
-            {productos.map((producto) => (
-              <div key={producto.id} className="product-card">
-                <div className="product-image">
-                  <img
-                    src={producto.imagen}
-                    alt={producto.nombre}
-                    loading="lazy"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = "/placeholder.png";
-                    }}
-                  />
-                </div>
-                <div className="product-info">
-                  <h3>{producto.nombre}</h3>
-                  <p className="tienda-desc">{producto.descripcion}</p>
-                  <div className="product-price">
-                    ${producto.precio.toLocaleString("es-CO")}
-                  </div>
-                  <button
-                    className="btn-add-cart"
-                    onClick={() => handleAddToCart(producto)}
-                  >
-                    Ordenar ahora
-                  </button>
-                </div>
+        <div className="products-grid">
+          {productos.map((producto) => (
+            <div key={producto.id} className="product-card">
+              <div className="product-image">
+                <img
+                  src={producto.imagen}
+                  alt={producto.nombre}
+                  loading="lazy"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = "/placeholder.png";
+                  }}
+                />
               </div>
-            ))}
-          </div>
-        </section>
+              <div className="product-info">
+                <h3>{producto.nombre}</h3>
+                <p className="tienda-desc">{producto.descripcion}</p>
+                <div className="product-price">
+                  ${producto.precio.toLocaleString("es-CO")}
+                </div>
+                <button
+                  className="btn-add-cart"
+                  onClick={() => handleAddToCart(producto)}
+                >
+                  Ordenar ahora
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* Back to Home Button */}
         <section className="catalogo-footer">
           <Link to="/" className="btn-volver">
-            Volver a la página principal ▶
+            <i className="bx bx-arrow-back"></i>
+            Volver a inicio
           </Link>
         </section>
       </div>

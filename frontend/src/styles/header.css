@@ -183,8 +183,8 @@ header.sticky {
         margin-right: 15px;
     }
 
-        #logout-btn {
-            padding: 8px 20px;
-            font-size: 14px;
-        }
+    #logout-btn {
+        padding: 8px 20px;
+        font-size: 14px;
     }
+}

@@ -102,7 +102,7 @@ class AuthService {
         { expiresIn: '24h' }
       );
 
-      console.log('✅ Token generado para:', user.email);
+      console.log('✅ Token generado para:', user.email, '| Rol:', user.rol);
 
       return {
         user: {
@@ -131,20 +131,26 @@ export const register = async (req: Request, res: Response) => {
     // Validaciones
     if (!nombre || !email || !password) {
       return res.status(400).json({ 
-        error: 'Nombre, email y password son requeridos' 
+        status: 'error',
+        ok: false,
+        message: 'Nombre, email y password son requeridos' 
       });
     }
 
-    const user = await authService.register(nombre, email, password, rol);
+    const userData = await authService.register(nombre, email, password, rol);
 
     res.status(201).json({
+      status: 'success',
+      ok: true,
       message: 'Usuario registrado exitosamente',
-      user
+      user: userData
     });
   } catch (error: any) {
     console.error('Error en register controller:', error);
     res.status(400).json({ 
-      error: error.message || 'Error al registrar usuario' 
+      status: 'error',
+      ok: false,
+      message: error.message || 'Error al registrar usuario' 
     });
   }
 };
@@ -158,22 +164,30 @@ export const login = async (req: Request, res: Response) => {
     // Validaciones
     if (!email || !password) {
       return res.status(400).json({ 
-        error: 'Email y password son requeridos' 
+        status: 'error',
+        ok: false,
+        message: 'Email y password son requeridos' 
       });
     }
 
     const result = await authService.login(email, password);
 
-    console.log('✅ Login exitoso, enviando respuesta');
+    console.log('✅ Login exitoso para:', result.user.email, '| Rol:', result.user.rol);
 
+    // ✅ RESPUESTA ESTANDARIZADA
     res.json({
+      status: 'success',
+      ok: true,
       message: 'Login exitoso',
-      ...result
+      user: result.user,
+      token: result.token
     });
   } catch (error: any) {
     console.error('❌ Error en login controller:', error);
     res.status(401).json({ 
-      error: error.message || 'Credenciales incorrectas' 
+      status: 'error',
+      ok: false,
+      message: error.message || 'Credenciales incorrectas' 
     });
   }
 };
