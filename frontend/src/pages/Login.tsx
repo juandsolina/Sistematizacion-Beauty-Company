@@ -57,7 +57,7 @@ export default function Login() {
       console.log('📦 Payload:', { email: payload.email, password: '***' });
 
       const { data } = await axios.post<ApiResponse>(
-        `${API_BASE}/api/auth/login`,
+        `${API_BASE}/api/auth/login`,  // ✅ CORREGIDO: Agregado /api
         payload,
         { 
           headers: {

@@ -1,5 +1,6 @@
 // Configuración base del backend
-export const API_BASE = import.meta.env.VITE_API_URL || "/api"; // 👈 Cambiado para usar proxy en dev
+// frontend/src/services/config.ts
+export const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:3000") + "/api"; // 👈 Cambiado para usar proxy en dev
 export const ASSET_BASE = API_BASE.replace(/\/api\/?$/, "");
 
 /**

@@ -1,3 +1,4 @@
+// src/controllers/admin/authController.ts
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -14,119 +15,12 @@ interface UserRow extends RowDataPacket {
   creado_en?: string;
 }
 
-interface LoginResult {
-  user: {
-    id: number;
-    nombre: string;
-    email: string;
-    rol: string;
-  };
-  token: string;
-}
-
-class AuthService {
-  
-  async register(nombre: string, email: string, password: string, rol: string = 'cliente') {
-    try {
-      // Verificar si el usuario ya existe
-      const [existingUsers] = await pool.query<UserRow[]>(
-        'SELECT id FROM usuarios WHERE email = ?',
-        [email]
-      );
-
-      if (existingUsers.length > 0) {
-        throw new Error('El email ya está registrado');
-      }
-
-      // Hash de la contraseña
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Insertar usuario
-      const [result] = await pool.query<ResultSetHeader>(
-        'INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, ?)',
-        [nombre, email, hashedPassword, rol]
-      );
-
-      return {
-        id: result.insertId,
-        nombre,
-        email,
-        rol
-      };
-    } catch (error: any) {
-      console.error('Error en AuthService.register:', error);
-      throw error;
-    }
-  }
-
-  async login(email: string, password: string): Promise<LoginResult> {
-    try {
-      console.log('🔍 Buscando usuario:', email);
-
-      const [users] = await pool.query<UserRow[]>(
-        'SELECT id, nombre, email, password, rol FROM usuarios WHERE email = ?',
-        [email]
-      );
-
-      console.log('📊 Usuarios encontrados:', users.length);
-
-      if (users.length === 0) {
-        throw new Error('Credenciales incorrectas');
-      }
-
-      const user = users[0];
-      
-      console.log('👤 Usuario encontrado:', {
-        id: user.id,
-        nombre: user.nombre,
-        email: user.email,
-        rol: user.rol
-      });
-
-      // Verificar contraseña
-      const validPassword = await bcrypt.compare(password, user.password);
-      
-      if (!validPassword) {
-        throw new Error('Credenciales incorrectas');
-      }
-
-      // Generar token JWT
-      const JWT_SECRET = process.env.JWT_SECRET || 'tu_secreto_super_seguro';
-      const token = jwt.sign(
-        { 
-          id: user.id, 
-          email: user.email, 
-          rol: user.rol
-        },
-        JWT_SECRET,
-        { expiresIn: '24h' }
-      );
-
-      console.log('✅ Token generado para:', user.email, '| Rol:', user.rol);
-
-      return {
-        user: {
-          id: user.id,
-          nombre: user.nombre,
-          email: user.email,
-          rol: user.rol
-        },
-        token
-      };
-    } catch (error: any) {
-      console.error('❌ Error en AuthService.login:', error);
-      throw error;
-    }
-  }
-}
-
-// Instancia del servicio
-const authService = new AuthService();
-
 // Controladores
 export const register = async (req: Request, res: Response) => {
   try {
     const { nombre, email, password, rol } = req.body;
+
+    console.log('📥 Register request:', { nombre, email, rol: rol || 'cliente' });
 
     // Validaciones
     if (!nombre || !email || !password) {
@@ -137,7 +31,37 @@ export const register = async (req: Request, res: Response) => {
       });
     }
 
-    const userData = await authService.register(nombre, email, password, rol);
+    // Verificar si el usuario ya existe
+    const [existingUsers] = await pool.query<UserRow[]>(
+      'SELECT id FROM usuarios WHERE email = ?',
+      [email]
+    );
+
+    if (existingUsers.length > 0) {
+      return res.status(400).json({
+        status: 'error',
+        ok: false,
+        message: 'El email ya está registrado'
+      });
+    }
+
+    // Hash de la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insertar usuario
+    const [result] = await pool.query<ResultSetHeader>(
+      'INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, ?)',
+      [nombre, email, hashedPassword, rol || 'cliente']
+    );
+
+    const userData = {
+      id: result.insertId,
+      nombre,
+      email,
+      rol: rol || 'cliente'
+    };
+
+    console.log('✅ Usuario registrado:', userData);
 
     res.status(201).json({
       status: 'success',
@@ -146,7 +70,7 @@ export const register = async (req: Request, res: Response) => {
       user: userData
     });
   } catch (error: any) {
-    console.error('Error en register controller:', error);
+    console.error('❌ Error en register controller:', error);
     res.status(400).json({ 
       status: 'error',
       ok: false,
@@ -170,17 +94,71 @@ export const login = async (req: Request, res: Response) => {
       });
     }
 
-    const result = await authService.login(email, password);
+    // Buscar usuario
+    const [users] = await pool.query<UserRow[]>(
+      'SELECT id, nombre, email, password, rol FROM usuarios WHERE email = ?',
+      [email]
+    );
 
-    console.log('✅ Login exitoso para:', result.user.email, '| Rol:', result.user.rol);
+    console.log('📊 Usuarios encontrados:', users.length);
 
-    // ✅ RESPUESTA ESTANDARIZADA
+    if (users.length === 0) {
+      return res.status(401).json({
+        status: 'error',
+        ok: false,
+        message: 'Credenciales incorrectas'
+      });
+    }
+
+    const user = users[0];
+    
+    console.log('👤 Usuario encontrado:', {
+      id: user.id,
+      nombre: user.nombre,
+      email: user.email,
+      rol: user.rol,
+      passwordHash: user.password.substring(0, 20) + '...'
+    });
+
+    // Verificar contraseña
+    console.log('🔐 Comparando contraseñas...');
+    const validPassword = await bcrypt.compare(password, user.password);
+    
+    console.log('✅ Resultado de comparación:', validPassword);
+
+    if (!validPassword) {
+      return res.status(401).json({
+        status: 'error',
+        ok: false,
+        message: 'Credenciales incorrectas'
+      });
+    }
+
+    // Generar token JWT
+    const JWT_SECRET = process.env.JWT_SECRET || 'tu_secreto_super_seguro';
+    const token = jwt.sign(
+      { 
+        id: user.id, 
+        email: user.email, 
+        rol: user.rol
+      },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    console.log('✅ Login exitoso para:', user.email, '| Rol:', user.rol);
+
     res.json({
       status: 'success',
       ok: true,
       message: 'Login exitoso',
-      user: result.user,
-      token: result.token
+      user: {
+        id: user.id,
+        nombre: user.nombre,
+        email: user.email,
+        rol: user.rol
+      },
+      token
     });
   } catch (error: any) {
     console.error('❌ Error en login controller:', error);
