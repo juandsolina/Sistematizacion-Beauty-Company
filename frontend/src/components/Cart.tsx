@@ -2,17 +2,8 @@
 import { X, Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { resolveImageUrl } from '../services/script';
+import { formatPrice } from '../utils/formatPrice';
 import '../styles/carrito.css';
-
-// Helper para formatear precios
-const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(price);
-};
 
 export default function Cart() {
   const { 
