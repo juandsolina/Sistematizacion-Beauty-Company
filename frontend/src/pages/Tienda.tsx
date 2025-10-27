@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { getProductos } from "../services/catalogo";
 import { resolveImageUrl } from "../services/script";
 import { useCart } from "../context/CartContext";
+import { formatPrice } from "../utils/formatPrice";
 import "../styles/tienda.css";
 
 type Producto = {
@@ -20,7 +21,6 @@ export default function Tienda() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ AHORA useCart() está dentro del componente
   const { addToCart, setIsCartOpen } = useCart();
 
   useEffect(() => {
@@ -97,7 +97,7 @@ export default function Tienda() {
                   <p className="tienda-desc">{p.descripcion || "Producto sin descripción."}</p>
 
                   <div className="tienda-foot">
-                    <span className="tienda-price">${p.precio.toFixed(2)}</span>
+                    <span className="tienda-price">{formatPrice(p.precio)}</span>
                     <button
                       type="button"
                       className={`tienda-btn ${hayStock ? "ok" : "off"}`}
