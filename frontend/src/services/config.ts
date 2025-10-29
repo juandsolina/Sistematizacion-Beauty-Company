@@ -1,6 +1,7 @@
 // Configuración base del backend
-export const API_BASE = import.meta.env.VITE_API_URL || "/api"; // 👈 Cambiado para usar proxy en dev
-export const ASSET_BASE = API_BASE.replace(/\/api\/?$/, "");
+const envApiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+export const API_BASE = `${envApiUrl}/api`;
+export const ASSET_BASE = envApiUrl;
 
 /**
  * POST JSON

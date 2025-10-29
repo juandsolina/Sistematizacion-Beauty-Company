@@ -38,6 +38,7 @@ function qs(params?: Record<string, string | number | boolean | null | undefined
   return q ? `?${q}` : "";
 }
 
+// ✅ CAMBIO: Removido el /api porque ya está en API_BASE
 const BASE = "/productos";
 
 /** Listar con filtros/paginación */
@@ -63,5 +64,5 @@ export function updateProducto(id: Id, producto: Partial<Producto>) {
 
 /** Eliminar producto */
 export function deleteProducto(id: Id) {
-  return deleteJSON(`${BASE}/${id}`);
+  return deleteJSON<Producto>(`${BASE}/${id}`);
 }
