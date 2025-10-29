@@ -36,7 +36,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/test", testRoutes);
-// app.use("/api", apiRoutes);  // ← COMENTA ESTA LÍNEA TEMPORALMENTE
+ app.use("/api", apiRoutes);  // ← COMENTA ESTA LÍNEA TEMPORALMENTE
 app.use("/admin", adminRoutes);
 
 // --- Error handler ---

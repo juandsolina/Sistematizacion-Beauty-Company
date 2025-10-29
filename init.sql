@@ -1,21 +1,15 @@
 SET NAMES utf8mb4;
 SET character_set_client = utf8mb4;
 
+-- 1. Crear la base de datos si no existe
 CREATE DATABASE IF NOT EXISTS tienda
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
+
+-- 2. Seleccionar la base de datos para usarla
 USE tienda;
 
--- Si ya existe la tabla:
-ALTER TABLE productos CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-ALTER TABLE usuarios CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-ALTER TABLE carrito CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-ALTER TABLE pedidos CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode
--- Crear base de datos
-CREATE DATABASE IF NOT EXISTS tienda;
-USE tienda;
-
--- Crear tabla de usuarios con campo rol
+-- 3. Crear tabla de usuarios
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -25,7 +19,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Crear tabla de productos
+-- 4. Crear tabla de productos
 CREATE TABLE IF NOT EXISTS productos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
@@ -36,7 +30,7 @@ CREATE TABLE IF NOT EXISTS productos (
     creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Crear tabla de carrito
+-- 5. Crear tabla de carrito
 CREATE TABLE IF NOT EXISTS carrito (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
@@ -47,7 +41,7 @@ CREATE TABLE IF NOT EXISTS carrito (
     FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
 );
 
--- Crear tabla de pedidos
+-- 6. Crear tabla de pedidos
 CREATE TABLE IF NOT EXISTS pedidos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
@@ -57,7 +51,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Crear tabla detalle de pedidos
+-- 7. Crear tabla detalle de pedidos
 CREATE TABLE IF NOT EXISTS detalle_pedidos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     pedido_id INT NOT NULL,
@@ -68,6 +62,7 @@ CREATE TABLE IF NOT EXISTS detalle_pedidos (
     FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
 );
 
+-- 8. Insertar datos
 -- Insertar usuario administrador inicial (contraseña bcrypt de "admin123")
 INSERT INTO usuarios (nombre, email, password, rol) VALUES
 ('Administrador', 'admin@tienda.com', '$2b$10$VEEsl9MyJrFgO6Y6m/RcaOrp6kR.NxQPcGjTfQkLM5q8vO0C6pA8e', 'admin')

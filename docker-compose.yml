@@ -16,7 +16,12 @@ services:
       - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
+      # --- INICIO DE LA CORRECCIÓN ---
+      # Cambiamos el 'test' para que use el usuario de la aplicación ('user').
+      # Esto soluciona la "race condition", forzando a Docker a esperar
+      # a que el 'init.sql' termine antes de marcar el servicio como "healthy".
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "user", "-ppass123"]
+      # --- FIN DE LA CORRECCIÓN ---
       interval: 10s
       timeout: 10s
       retries: 10
@@ -32,7 +37,7 @@ services:
     container_name: node-app
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy # <--- Ahora esto esperará al healthcheck correcto
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -55,23 +60,6 @@ services:
       retries: 5
       start_period: 30s
 
-  # Frontend comentado - se ejecuta localmente con: npm run dev
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #     args:
-  #       VITE_API_URL: http://localhost:3000
-  #   container_name: web-frontend
-  #   depends_on:
-  #     backend:
-  #       condition: service_started
-  #   ports:
-  #     - "8080:80"
-  #   networks:
-  #     - app-network
-  #   restart: unless-stopped
-
   phpmyadmin:
     image: phpmyadmin:5-apache
     container_name: phpmyadmin
@@ -83,7 +71,7 @@ services:
       UPLOAD_LIMIT: 64M
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy # <--- Y esto también
     ports:
       - "8081:80"
     networks:
