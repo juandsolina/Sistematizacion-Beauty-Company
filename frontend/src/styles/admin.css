@@ -1,400 +1,353 @@
-/* ========================================
-   PANEL DE ADMINISTRACIÓN
-   Integrado con los colores de la página
-   ======================================== */
+/*
+=========================================
+ARCHIVO CSS PRINCIPAL DEL PANEL DE ADMIN
+TEMA: "SusanaTiendaBogotá" (Dark Mode)
+=========================================
+Contiene estilos para:
+1. Layout General (Dashboard, Páginas)
+2. Tarjetas de Estadísticas (Dashboard)
+3. Tarjetas de Acciones (Dashboard)
+4. Botones Generales (primary, secondary, danger)
+5. Tablas (Gestionar Productos, Usuarios, Pedidos)
+6. Formularios (Nuevo/Editar Producto)
+7. Helpers (Errores, Estados de Rol/Pedido)
+=========================================
+*/
 
-.admin-dashboard {
-  min-height: 100vh;
-  background: var(--bg-color);
-  padding: 120px 12% 60px; /* Ajustado para el header fijo */
-}
-
-/* ========================================
-   SECCIÓN DE BIENVENIDA
-   ======================================== */
-.admin-welcome-section {
+/* === 1. Layout General Admin === */
+/* Fondo base negro como en tu imagen */
+.admin-dashboard,
+.admin-page-container {
+  background-color: #000000;
+  padding: 2rem;
   max-width: 1400px;
-  margin: 0 auto 3rem;
-  text-align: center;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease-in-out;
+  color: #f0f0f0; /* Color de texto por defecto */
 }
 
-.admin-title {
-  color: var(--text-color);
-  font-size: 3rem;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-welcome-section,
+.admin-page-header {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.admin-section + .admin-section {
+  margin-top: 2.5rem;
+}
+
+.admin-title,
+.admin-page-header h1 {
+  font-size: 1.75rem;
   font-weight: 700;
-  margin: 0 0 1rem 0;
-  text-shadow: 0 2px 4px rgba(233, 30, 99, 0.3);
+  color: #FFFFFF; /* Títulos en blanco puro */
 }
 
 .admin-subtitle {
-  color: #d1d1d1;
-  font-size: 1.2rem;
-  margin: 0;
-}
-
-.admin-subtitle strong {
-  color: var(--main-color);
-  font-weight: 600;
-}
-
-/* ========================================
-   GRID DE ESTADÍSTICAS
-   ======================================== */
-.admin-stats-grid {
-  max-width: 1400px;
-  margin: 0 auto 3rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-}
-
-.admin-stat-card {
-  background: var(--other-color);
-  border-radius: 12px;
-  padding: 2rem;
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  transition: all 0.5s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.admin-stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: linear-gradient(180deg, var(--main-color) 0%, var(--second-color) 100%);
-}
-
-.admin-stat-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(233, 30, 99, 0.4);
-}
-
-.stat-icon-wrapper {
-  width: 70px;
-  height: 70px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--main-color) 0%, var(--second-color) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.stat-icon {
-  font-size: 2.5rem;
-  filter: brightness(0) invert(1);
-}
-
-.stat-content {
-  flex: 1;
-}
-
-.stat-label {
-  margin: 0;
-  color: #999;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.stat-value {
-  margin: 0.75rem 0 0 0;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--text-color);
-  line-height: 1;
-}
-
-/* ========================================
-   SECCIONES
-   ======================================== */
-.admin-section {
-  max-width: 1400px;
-  margin: 0 auto 3rem;
-  background: var(--other-color);
-  border-radius: 12px;
-  padding: 2.5rem;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  font-size: 1.1rem;
+  color: #AAAAAA; /* Subtítulos en gris claro */
+  margin-top: 0.25rem;
 }
 
 .section-title {
-  margin: 0 0 2rem 0;
-  color: var(--text-color);
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #E800B4; /* Títulos de sección en rosa */
 }
 
-/* ========================================
-   ACCIONES RÁPIDAS
-   ======================================== */
+/* === 2. Tarjetas de Estadísticas (Dashboard) === */
+/* Adaptado al estilo de tu nueva imagen */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.admin-stat-card {
+  display: flex;
+  align-items: center;
+  background-color: #000000; /* Fondo negro */
+  padding: 1rem;
+  border-radius: 12px;
+  gap: 1.5rem;
+  box-shadow: none; /* Sin sombra */
+}
+
+.stat-icon-wrapper {
+  flex-shrink: 0;
+  padding: 1rem;
+  border-radius: 12px; /* Cuadrado redondeado */
+  display: grid;
+  place-items: center;
+  background-color: #E800B4; /* Fondo rosa */
+}
+.stat-icon {
+  font-size: 1.75rem;
+  color: #FFFFFF; /* Icono/Emoji en blanco */
+}
+.stat-content .stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #AAAAAA; /* "USUARIOS", "PRODUCTOS" en gris */
+  text-transform: uppercase;
+}
+.stat-content .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FFFFFF; /* "5", "9" en blanco */
+}
+
+/* === 3. Tarjetas de Acciones (Dashboard) === */
+/* Usando el gradiente de tu primera imagen */
 .admin-actions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
 }
 
 .admin-action-card {
-  background: linear-gradient(135deg, var(--main-color) 0%, var(--second-color) 100%);
-  color: var(--text-color);
-  border: none;
-  border-radius: 12px;
-  padding: 2.5rem 1.5rem;
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  transition: all 0.5s ease;
-  font-family: 'Poppins', sans-serif;
-  min-height: 160px;
-}
-
-.admin-action-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(233, 30, 99, 0.4);
-  background: linear-gradient(135deg, var(--second-color) 0%, var(--main-color) 100%);
-}
-
-.admin-action-card:active {
-  transform: translateY(-5px);
-}
-
-.action-icon {
-  font-size: 3rem;
-  line-height: 1;
-}
-
-.action-label {
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-align: center;
-  line-height: 1.3;
-}
-
-/* ========================================
-   INFORMACIÓN DEL SISTEMA
-   ======================================== */
-.admin-info-card {
-  background: rgba(255, 255, 255, 0.03);
+  padding: 1.5rem;
   border-radius: 12px;
-  padding: 2rem;
-  border-left: 4px solid var(--main-color);
+  border: none;
+  /* El gradiente de tu imagen original */
+  background: linear-gradient(145deg, #E800B4, #B0B0B0);
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+  font-weight: 600; /* Texto más grueso */
+  color: #FFFFFF; /* Texto en blanco */
+}
+.admin-action-card:hover {
+  transform: translateY(-5px);
+  /* Sombra con el color rosa */
+  box-shadow: 0 8px 15px rgba(232, 0, 180, 0.3);
+}
+.action-icon {
+  font-size: 2rem;
+  color: #FFFFFF; /* Icono en blanco */
 }
 
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.info-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.info-row:first-child {
-  padding-top: 0;
-}
-
-.info-label {
-  color: #999;
+/* === 4. Botones Generales === */
+.admin-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
   font-weight: 600;
-  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  margin-right: 0.5rem;
+  text-decoration: none;
+  line-height: 1.5;
+}
+.admin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.info-value {
-  color: var(--text-color);
+.admin-btn.primary {
+  background-color: #E800B4; /* Rosa */
+  color: white;
+}
+.admin-btn.primary:hover {
+  background-color: #C7009C; /* Rosa más oscuro */
+}
+
+.admin-btn.secondary {
+  background-color: #333333; /* Gris oscuro */
+  color: #E0E0E0;
+  border: 1px solid #555555;
+}
+.admin-btn.secondary:hover {
+  background-color: #444444;
+}
+
+.admin-btn.danger {
+  background-color: #dc2626; /* Rojo */
+  color: white;
+}
+.admin-btn.danger:hover {
+  background-color: #b91c1c;
+}
+
+
+/* === 5. Tablas (GestionarProductos, Usuarios, Pedidos) === */
+.admin-table-container {
+  background-color: #1E1E1E; /* Fondo de tarjeta gris oscuro */
+  border-radius: 8px;
+  box-shadow: none;
+  border: 1px solid #333333;
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #333333; /* Borde gris oscuro */
+  text-align: left;
+  font-size: 0.9rem;
+  color: #E0E0E0; /* Texto gris claro */
+}
+
+.admin-table th {
+  background-color: #252525; /* Cabecera un poco más oscura */
+  font-weight: 600;
+  color: #FFFFFF; /* Texto cabecera blanco */
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.admin-table tbody tr:hover {
+  background-color: #2A2A2A; /* Hover sutil */
+}
+
+.admin-table td:last-child {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* === 6. Formularios (Nuevo/Editar Producto) === */
+.admin-info-card {
+  background-color: #1E1E1E; /* Fondo de tarjeta gris oscuro */
+  border-radius: 8px;
+  box-shadow: none;
+  border: 1px solid #333333;
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
   font-weight: 500;
-  font-size: 1rem;
+  color: #AAAAAA; /* Texto de label gris */
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
 }
 
-/* ========================================
-   RESPONSIVE DESIGN
-   ======================================== */
-@media (max-width: 1400px) {
-  .admin-dashboard {
-    padding: 100px 5% 60px;
-  }
-
-  .admin-title {
-    font-size: 2.5rem;
-  }
-
-  .admin-stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .admin-actions-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="email"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #444444; /* Borde de input */
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  background-color: #252525; /* Fondo de input */
+  color: #E0E0E0; /* Texto de input */
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #777777;
 }
 
-@media (max-width: 1024px) {
-  .admin-dashboard {
-    padding: 100px 3% 50px;
-  }
-
-  .admin-title {
-    font-size: 2.2rem;
-  }
-
-  .admin-subtitle {
-    font-size: 1.1rem;
-  }
-
-  .admin-stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .admin-section {
-    padding: 2rem;
-  }
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #E800B4; /* Borde rosa al enfocar */
+  box-shadow: 0 0 0 2px rgba(232, 0, 180, 0.3); /* Sombra rosa */
 }
 
-@media (max-width: 768px) {
-  .admin-dashboard {
-    padding: 100px 5% 40px;
-  }
-
-  .admin-title {
-    font-size: 2rem;
-  }
-
-  .admin-subtitle {
-    font-size: 1rem;
-  }
-
-  .admin-stats-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .admin-stat-card {
-    padding: 1.5rem;
-  }
-
-  .stat-icon-wrapper {
-    width: 60px;
-    height: 60px;
-  }
-
-  .stat-icon {
-    font-size: 2rem;
-  }
-
-  .stat-value {
-    font-size: 2rem;
-  }
-
-  .admin-actions-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .admin-action-card {
-    min-height: 130px;
-    padding: 2rem 1.5rem;
-  }
-
-  .action-icon {
-    font-size: 2.5rem;
-  }
-
-  .action-label {
-    font-size: 1rem;
-  }
-
-  .section-title {
-    font-size: 1.75rem;
-  }
-
-  .admin-section {
-    padding: 1.5rem;
-  }
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
 }
 
-@media (max-width: 480px) {
-  .admin-dashboard {
-    padding: 100px 5% 30px;
-  }
-
-  .admin-title {
-    font-size: 1.75rem;
-  }
-
-  .admin-subtitle {
-    font-size: 0.9rem;
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-  }
-
-  .stat-value {
-    font-size: 1.75rem;
-  }
-
-  .action-icon {
-    font-size: 2.2rem;
-  }
-
-  .action-label {
-    font-size: 0.95rem;
-  }
-
-  .info-label,
-  .info-value {
-    font-size: 0.9rem;
-  }
-
-  .admin-info-card {
-    padding: 1.5rem;
-  }
+.form-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-/* ========================================
-   ANIMACIONES
-   ======================================== */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* === 7. Helpers (Errores, Estados de Rol/Pedido) === */
+.error,
+.form-error {
+  color: #F87171; /* Texto de error rojo claro */
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-.admin-welcome-section {
-  animation: fadeInUp 0.6s ease-out;
+.admin-page-container.error {
+  color: #F87171;
+  background-color: #4B1414; /* Fondo rojo oscuro */
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #B91C1C;
 }
 
-.admin-stat-card {
-  animation: fadeInUp 0.6s ease-out;
+.form-error {
+  margin-left: 1rem;
 }
 
-.admin-stat-card:nth-child(1) { animation-delay: 0.1s; opacity: 0; animation-fill-mode: forwards; }
-.admin-stat-card:nth-child(2) { animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards; }
-.admin-stat-card:nth-child(3) { animation-delay: 0.3s; opacity: 0; animation-fill-mode: forwards; }
-.admin-stat-card:nth-child(4) { animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards; }
-
-.admin-section {
-  animation: fadeInUp 0.6s ease-out;
+/* Estados para Dark Mode */
+.rol-admin {
+  background-color: #581C1C;
+  color: #FCA5A5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
 }
-
-.admin-section:nth-of-type(1) { animation-delay: 0.5s; opacity: 0; animation-fill-mode: forwards; }
-.admin-section:nth-of-type(2) { animation-delay: 0.6s; opacity: 0; animation-fill-mode: forwards; }
+.rol-cliente {
+  background-color: #1E3A8A;
+  color: #BFDBFE;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.estado-pendiente {
+  background-color: #78350F;
+  color: #FCD34D;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.estado-enviado {
+  background-color: #1E3A8A;
+  color: #BFDBFE;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.estado-completado {
+  background-color: #064E3B;
+  color: #A7F3D0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.estado-cancelado {
+  background-color: #581C1C;
+  color: #FCA5A5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}

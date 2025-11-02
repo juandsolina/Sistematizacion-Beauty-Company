@@ -1,49 +1,26 @@
-import { useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+// frontend/src/components/Header.tsx
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import '../styles/Header.css';
 
 export default function Header() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { setIsCartOpen, getCount } = useCart();
   const location = useLocation();
+  const navigate = useNavigate();
   const itemCount = getCount();
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSticky, setIsSticky] = useState(false);
+
   useEffect(() => {
-    // Script para el menú móvil
-    const menuIcon = document.getElementById('menu-icon');
-    const navlist = document.querySelector('.navlist');
-    
-    const handleMenuClick = () => {
-      navlist?.classList.toggle('active');
-    };
-
-    if (menuIcon) {
-      menuIcon.addEventListener('click', handleMenuClick);
-    }
-
-    // Cerrar menú al hacer clic en un enlace
-    const navLinks = document.querySelectorAll('.navlist a');
-    navLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        navlist?.classList.remove('active');
-      });
-    });
-
-    // Script para el header sticky
-    const header = document.querySelector('header');
     const handleScroll = () => {
-      if (header) {
-        header.classList.toggle('sticky', window.scrollY > 100);
-      }
+      setIsSticky(window.scrollY > 100);
     };
-
     window.addEventListener('scroll', handleScroll);
-
     return () => {
-      if (menuIcon) {
-        menuIcon.removeEventListener('click', handleMenuClick);
-      }
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
@@ -51,87 +28,68 @@ export default function Header() {
   const handleLogout = () => {
     logout();
     alert("👋 Sesión cerrada");
-    window.location.href = "/";
+    navigate("/");
   };
 
   const handleScroll = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+    setIsMenuOpen(false);
+    if (location.pathname === "/") {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate(`/#${id}`);
     }
   };
 
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  // Función para obtener solo el primer nombre
+  const getFirstName = (fullName: string) => {
+    return fullName.split(' ')[0];
+  };
+
   return (
-    <header>
-      <Link to="/" className="logo">
-        <i className="bx bx-home"></i>SusanatiendaBogotá
+    <header className={isSticky ? 'sticky' : ''}>
+      
+      <Link to="/" className="logo" onClick={closeMenu}>
+        <i className="bx bx-home"></i>
+        <span className="logo-text">SusanatiendaBogotá</span>
       </Link>
 
-      <ul className="navlist">
+      <ul className={`navlist ${isMenuOpen ? 'active' : ''}`}>
         <li>
-          <Link 
-            to="/"
-            className={location.pathname === "/" ? "active" : ""}
-          >
+          <Link to="/" className={location.pathname === "/" ? "active" : ""} onClick={closeMenu}>
             Inicio
           </Link>
         </li>
         <li>
-          <Link 
-            to="/catalogo"
-            className={location.pathname === "/catalogo" ? "active" : ""}
-          >
+          <Link to="/catalogo" className={location.pathname === "/catalogo" ? "active" : ""} onClick={closeMenu}>
             Catálogo
           </Link>
         </li>
-
         <li>
-          <Link 
-            to="/tienda"
-            className={location.pathname === "/tienda" ? "active" : ""}
-          >
+          <Link to="/tienda" className={location.pathname === "/tienda" ? "active" : ""} onClick={closeMenu}>
             Tienda
           </Link>
         </li>
-
         <li>
-          <a 
-            href="#reviews"
-            onClick={(e) => {
-              if (location.pathname === "/") {
-                e.preventDefault();
-                handleScroll("reviews");
-              } else {
-                window.location.href = "/#reviews";
-              }
-            }}
-          >
+          <a href="#reviews" onClick={() => handleScroll("reviews")}>
             Clientes
           </a>
         </li>
         <li>
-          <a 
-            href="#contact"
-            onClick={(e) => {
-              if (location.pathname === "/") {
-                e.preventDefault();
-                handleScroll("contact");
-              } else {
-                window.location.href = "/#contact";
-              }
-            }}
-          >
+          <a href="#contact" onClick={() => handleScroll("contact")}>
             Contactar
           </a>
         </li>
         
-        {/* 🔧 Enlace de Admin - Solo visible para administradores */}
         {isAuthenticated && isAdmin && (
           <li>
-            <Link 
-              to="/admin"
-              className={location.pathname === "/admin" ? "active" : ""}
-            >
+            <Link to="/admin" className={location.pathname.startsWith("/admin") ? "active" : ""} onClick={closeMenu}>
               Admin
             </Link>
           </li>
@@ -139,69 +97,56 @@ export default function Header() {
       </ul>
 
       <div className="nav-icons">
-        {/* 🛒 Botón del Carrito */}
+        
+        {/* Carrito */}
         <button
-          onClick={() => {
-            console.log('Click en carrito, abriendo...');
-            setIsCartOpen(true);
-          }}
+          onClick={() => setIsCartOpen(true)}
           type="button"
           className="cart-btn"
-          style={{
-            position: 'relative',
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '8px',
-            marginRight: '15px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
+          aria-label="Abrir carrito"
         >
-          <i className="bx bx-cart" style={{ fontSize: '28px', color: 'var(--text-color)' }}></i>
+          <i className="bx bx-cart"></i>
           {itemCount > 0 && (
-            <span
-              style={{
-                position: 'absolute',
-                top: '0',
-                right: '0',
-                background: '#ec4899',
-                color: 'white',
-                borderRadius: '50%',
-                width: '22px',
-                height: '22px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                border: '2px solid black'
-              }}
-            >
+            <span className="cart-count">
               {itemCount}
             </span>
           )}
         </button>
 
+        {/* Usuario no autenticado */}
         {!isAuthenticated ? (
-          <Link to="/login">
+          <Link to="/login" onClick={closeMenu} aria-label="Iniciar sesión">
             <i className="bx bx-user"></i>
           </Link>
         ) : (
-          <button 
-            onClick={handleLogout} 
-            className="btn" 
-            style={{ 
-              padding: '10px 20px', 
-              fontSize: '14px',
-              marginRight: '10px'
-            }}
-          >
-            Cerrar Sesión
-          </button>
+          <>
+            {/* Usuario autenticado - Solo primer nombre */}
+            {user && (
+              <span className="welcome-text" title={`Bienvenido, ${user.nombre}`}>
+                Hola, {getFirstName(user.nombre)}
+              </span>
+            )}
+            
+            {/* Botón de logout */}
+            <button 
+              onClick={handleLogout} 
+              id="logout-btn"
+              aria-label="Cerrar sesión"
+            >
+              Salir
+            </button>
+          </>
         )}
-        <div className="bx bx-menu" id="menu-icon"></div>
+        
+        {/* Menú hamburguesa */}
+        <div 
+          className={`bx ${isMenuOpen ? 'bx-x' : 'bx-menu'}`} 
+          id="menu-icon"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          role="button"
+          aria-label="Menú"
+          tabIndex={0}
+        ></div>
       </div>
     </header>
   );
