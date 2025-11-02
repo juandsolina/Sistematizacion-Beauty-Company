@@ -1,4 +1,4 @@
-// src/app.ts
+// backend/src/app.ts
 import express, { Application } from "express";
 import cors from "cors";
 import path from "path";
@@ -34,10 +34,17 @@ app.get("/", (_req, res) => {
   res.json({ message: "API funcionando correctamente" });
 });
 
+// Rutas de autenticación
 app.use("/api/auth", authRoutes);
+
+// Rutas de testing
 app.use("/api/test", testRoutes);
- app.use("/api", apiRoutes);  // ← COMENTA ESTA LÍNEA TEMPORALMENTE
-app.use("/admin", adminRoutes);
+
+// Rutas de admin (DEBE IR ANTES de las rutas generales de /api)
+app.use("/api/admin", adminRoutes); // ✅ CAMBIO: /admin → /api/admin
+
+// Rutas generales de API
+app.use("/api", apiRoutes);
 
 // --- Error handler ---
 app.use(errorHandler);

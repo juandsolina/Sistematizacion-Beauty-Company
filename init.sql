@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     rol ENUM('admin','cliente') DEFAULT 'cliente',
-    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 4. Crear tabla de productos
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     usuario_id INT NOT NULL,
     total DECIMAL(10,2) NOT NULL,
     estado ENUM('pendiente','pagado','enviado','completado','cancelado') DEFAULT 'pendiente',
-    creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
