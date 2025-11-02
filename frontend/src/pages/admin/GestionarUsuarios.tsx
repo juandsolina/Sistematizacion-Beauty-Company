@@ -3,12 +3,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/admin.css';
 
+// Constante para la URL de la API
+const API_URL = 'http://localhost:3000';
+
 // Interfaz para el Usuario
 interface Usuario {
   id: number;
   nombre: string;
   email: string;
-  rol: 'admin' | 'cliente'; // O los roles que manejes
+  rol: 'admin' | 'cliente';
   fecha_registro: string;
 }
 
@@ -32,8 +35,8 @@ const GestionarUsuarios: React.FC = () => {
           throw new Error('No autorizado. Token no encontrado.');
         }
 
-        // Endpoint de tu backend para obtener usuarios (DEBES CREARLO)
-        const response = await fetch('/api/admin/usuarios', {
+        // ✅ CAMBIO AQUÍ: Agregamos la URL completa con el puerto correcto
+        const response = await fetch(`${API_URL}/api/admin/usuarios`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -60,14 +63,61 @@ const GestionarUsuarios: React.FC = () => {
     fetchUsuarios();
   }, [navigate]);
 
-  const handleEditarRol = (id: number) => {
-    console.log(`Editar rol del usuario con ID: ${id}`);
-    // Lógica para cambiar el rol (ej. un modal o un <select>)
+  const handleEditarRol = async (id: number, nuevoRol: 'admin' | 'cliente') => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${API_URL}/api/admin/usuarios/${id}/rol`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ rol: nuevoRol })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar el rol');
+      }
+
+      // Actualizar la lista de usuarios
+      setUsuarios(usuarios.map(u => 
+        u.id === id ? { ...u, rol: nuevoRol } : u
+      ));
+
+      console.log(`Rol actualizado para usuario ${id}`);
+    } catch (error) {
+      console.error('Error al editar rol:', error);
+      alert('Error al actualizar el rol del usuario');
+    }
   };
 
-  const handleEliminarUsuario = (id: number) => {
-    console.log(`Eliminar usuario con ID: ${id}`);
-    // Lógica para llamar al endpoint de DELETE
+  const handleEliminarUsuario = async (id: number) => {
+    if (!window.confirm('¿Estás seguro de eliminar este usuario?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${API_URL}/api/admin/usuarios/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al eliminar el usuario');
+      }
+
+      // Eliminar el usuario de la lista
+      setUsuarios(usuarios.filter(u => u.id !== id));
+      console.log(`Usuario ${id} eliminado`);
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+      alert('Error al eliminar el usuario');
+    }
   };
 
   if (loading) {
@@ -109,10 +159,13 @@ const GestionarUsuarios: React.FC = () => {
                   <td>{new Date(usuario.fecha_registro).toLocaleDateString()}</td>
                   <td>
                     <button 
-                      onClick={() => handleEditarRol(usuario.id)} 
+                      onClick={() => {
+                        const nuevoRol = usuario.rol === 'admin' ? 'cliente' : 'admin';
+                        handleEditarRol(usuario.id, nuevoRol);
+                      }} 
                       className="admin-btn secondary"
                     >
-                      Editar Rol
+                      Cambiar a {usuario.rol === 'admin' ? 'Cliente' : 'Admin'}
                     </button>
                     <button 
                       onClick={() => handleEliminarUsuario(usuario.id)} 
