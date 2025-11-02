@@ -55,7 +55,11 @@ router.get('/stats', async (req: Request, res: Response, next: NextFunction) => 
     res.json(stats);
   } catch (error) {
     console.error('❌ Error al obtener estadísticas:', error);
-    next(error);
+    res.status(500).json({
+      ok: false,
+      message: 'Error al obtener estadísticas',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    });
   }
 });
 
@@ -64,20 +68,23 @@ router.get('/usuarios', async (req: Request, res: Response, next: NextFunction) 
   try {
     console.log('👥 Obteniendo lista de usuarios...');
     
-    // ✅ CAMBIO AQUÍ: Usar creado_en y renombrarlo como fecha_registro
     const [usuarios] = await db.query<RowDataPacket[]>(
-      'SELECT id, nombre, email, rol, creado_en as fecha_registro FROM usuarios ORDER BY id DESC'
+      'SELECT id, nombre, email, rol, fecha_registro FROM usuarios ORDER BY id DESC'
     );
     
     console.log(`✅ ${usuarios.length} usuarios obtenidos`);
     
     res.json({ 
       ok: true, 
-      usuarios 
+      usuarios: usuarios
     });
   } catch (error) {
     console.error('❌ Error al obtener usuarios:', error);
-    next(error);
+    res.status(500).json({
+      ok: false,
+      message: 'Error al obtener usuarios',
+      error: error instanceof Error ? error.message : String(error)
+    });
   }
 });
 
@@ -86,8 +93,9 @@ router.get('/productos', async (req: Request, res: Response, next: NextFunction)
   try {
     console.log('📦 Obteniendo lista de productos...');
     
+    // Usar SELECT * por ahora hasta que veamos la estructura
     const [productos] = await db.query<RowDataPacket[]>(
-      'SELECT id, nombre, descripcion, precio, stock, imagen FROM productos ORDER BY nombre ASC'
+      'SELECT * FROM productos ORDER BY id DESC'
     );
     
     console.log(`✅ ${productos.length} productos obtenidos`);
@@ -98,7 +106,11 @@ router.get('/productos', async (req: Request, res: Response, next: NextFunction)
     });
   } catch (error) {
     console.error('❌ Error al obtener productos:', error);
-    next(error);
+    res.status(500).json({
+      ok: false,
+      message: 'Error al obtener productos',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    });
   }
 });
 
@@ -108,11 +120,16 @@ router.get('/pedidos', async (req: Request, res: Response, next: NextFunction) =
     console.log('🛒 Obteniendo lista de pedidos...');
     
     const [pedidos] = await db.query<RowDataPacket[]>(`
-      SELECT p.id, p.usuario_id, u.nombre as usuario_nombre, 
-             p.total, p.estado, p.creado_en as fecha_pedido
+      SELECT 
+        p.id, 
+        p.usuario_id, 
+        u.nombre as usuario_nombre, 
+        p.total, 
+        p.estado,
+        p.fecha_pedido
       FROM pedidos p
       INNER JOIN usuarios u ON p.usuario_id = u.id
-      ORDER BY p.creado_en DESC
+      ORDER BY p.fecha_pedido DESC
     `);
     
     console.log(`✅ ${pedidos.length} pedidos obtenidos`);
@@ -123,6 +140,7 @@ router.get('/pedidos', async (req: Request, res: Response, next: NextFunction) =
     });
   } catch (error) {
     console.error('❌ Error al obtener pedidos:', error);
+    // Si la tabla no existe, devolver array vacío
     res.json({ 
       ok: true, 
       pedidos: [],
@@ -131,13 +149,35 @@ router.get('/pedidos', async (req: Request, res: Response, next: NextFunction) =
   }
 });
 
-// DELETE /api/admin/usuarios/:id - Eliminar usuario (corregida la ruta)
+// DELETE /api/admin/usuarios/:id - Eliminar usuario
 router.delete('/usuarios/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    
+    // Prevenir que el admin se elimine a sí mismo
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const currentUser = JSON.parse(userStr);
+      if (currentUser.id === parseInt(id)) {
+        res.status(400).json({
+          success: false,
+          message: 'No puedes eliminarte a ti mismo'
+        });
+        return;
+      }
+    }
+    
     console.log(`🗑️ Eliminando usuario ID: ${id}`);
     
-    await db.query('DELETE FROM usuarios WHERE id = ?', [id]);
+    const [result]: any = await db.query('DELETE FROM usuarios WHERE id = ?', [id]);
+    
+    if (result.affectedRows === 0) {
+      res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
+      return;
+    }
     
     console.log('✅ Usuario eliminado exitosamente');
     
@@ -147,7 +187,11 @@ router.delete('/usuarios/:id', async (req: Request, res: Response, next: NextFun
     });
   } catch (error) {
     console.error('❌ Error al eliminar usuario:', error);
-    next(error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al eliminar usuario',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    });
   }
 });
 
@@ -157,9 +201,29 @@ router.put('/usuarios/:id/rol', async (req: Request, res: Response, next: NextFu
     const { id } = req.params;
     const { rol } = req.body;
     
+    // Validar que el rol sea válido según tu ENUM
+    if (!['admin', 'cliente'].includes(rol)) {
+      res.status(400).json({
+        success: false,
+        message: 'Rol inválido. Debe ser "admin" o "cliente"'
+      });
+      return;
+    }
+    
     console.log(`🔄 Cambiando rol del usuario ID: ${id} a ${rol}`);
     
-    await db.query('UPDATE usuarios SET rol = ? WHERE id = ?', [rol, id]);
+    const [result]: any = await db.query(
+      'UPDATE usuarios SET rol = ? WHERE id = ?', 
+      [rol, id]
+    );
+    
+    if (result.affectedRows === 0) {
+      res.status(404).json({
+        success: false,
+        message: 'Usuario no encontrado'
+      });
+      return;
+    }
     
     console.log('✅ Rol actualizado exitosamente');
     
@@ -169,8 +233,12 @@ router.put('/usuarios/:id/rol', async (req: Request, res: Response, next: NextFu
     });
   } catch (error) {
     console.error('❌ Error al actualizar rol:', error);
-    next(error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al actualizar rol',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    });
   }
 });
 
-export default router;
+export default router
