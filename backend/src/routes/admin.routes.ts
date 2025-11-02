@@ -1,16 +1,14 @@
 // backend/src/routes/admin.routes.ts
 import { Router, Request, Response, NextFunction } from 'express';
 import { authenticateToken, isAdmin } from '../middleware/auth.middleware';
-import db from '../config/database'; // Tu pool de mysql2
+import db from '../config/database';
 import { RowDataPacket } from 'mysql2';
 
 const router = Router();
 
-// Aplicar middlewares a todas las rutas de admin
 router.use(authenticateToken);
 router.use(isAdmin);
 
-// Interface para las estadísticas
 interface StatsRow extends RowDataPacket {
   total: number;
 }
@@ -20,7 +18,6 @@ router.get('/stats', async (req: Request, res: Response, next: NextFunction) => 
   try {
     console.log('📊 Obteniendo estadísticas para admin...');
 
-    // Consultas usando el pool de mysql2
     const [productosRows] = await db.query<StatsRow[]>(
       'SELECT COUNT(*) as total FROM productos'
     );
@@ -29,7 +26,6 @@ router.get('/stats', async (req: Request, res: Response, next: NextFunction) => 
       'SELECT COUNT(*) as total FROM usuarios'
     );
     
-    // Verificar si la tabla pedidos existe
     let totalPedidos = 0;
     let totalVentas = 0;
     
@@ -68,8 +64,9 @@ router.get('/usuarios', async (req: Request, res: Response, next: NextFunction) 
   try {
     console.log('👥 Obteniendo lista de usuarios...');
     
+    // ✅ CAMBIO AQUÍ: Usar creado_en y renombrarlo como fecha_registro
     const [usuarios] = await db.query<RowDataPacket[]>(
-      'SELECT id, nombre, email, rol, fecha_registro FROM usuarios ORDER BY id DESC'
+      'SELECT id, nombre, email, rol, creado_en as fecha_registro FROM usuarios ORDER BY id DESC'
     );
     
     console.log(`✅ ${usuarios.length} usuarios obtenidos`);
@@ -112,10 +109,10 @@ router.get('/pedidos', async (req: Request, res: Response, next: NextFunction) =
     
     const [pedidos] = await db.query<RowDataPacket[]>(`
       SELECT p.id, p.usuario_id, u.nombre as usuario_nombre, 
-             p.total, p.estado, p.fecha_pedido
+             p.total, p.estado, p.creado_en as fecha_pedido
       FROM pedidos p
       INNER JOIN usuarios u ON p.usuario_id = u.id
-      ORDER BY p.fecha_pedido DESC
+      ORDER BY p.creado_en DESC
     `);
     
     console.log(`✅ ${pedidos.length} pedidos obtenidos`);
@@ -126,7 +123,6 @@ router.get('/pedidos', async (req: Request, res: Response, next: NextFunction) =
     });
   } catch (error) {
     console.error('❌ Error al obtener pedidos:', error);
-    // Si la tabla no existe, devolver array vacío
     res.json({ 
       ok: true, 
       pedidos: [],
@@ -135,8 +131,8 @@ router.get('/pedidos', async (req: Request, res: Response, next: NextFunction) =
   }
 });
 
-// DELETE /api/admin/users/:id - Eliminar usuario
-router.delete('/users/:id', async (req: Request, res: Response, next: NextFunction) => {
+// DELETE /api/admin/usuarios/:id - Eliminar usuario (corregida la ruta)
+router.delete('/usuarios/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     console.log(`🗑️ Eliminando usuario ID: ${id}`);
@@ -151,6 +147,28 @@ router.delete('/users/:id', async (req: Request, res: Response, next: NextFuncti
     });
   } catch (error) {
     console.error('❌ Error al eliminar usuario:', error);
+    next(error);
+  }
+});
+
+// PUT /api/admin/usuarios/:id/rol - Cambiar rol de usuario
+router.put('/usuarios/:id/rol', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { rol } = req.body;
+    
+    console.log(`🔄 Cambiando rol del usuario ID: ${id} a ${rol}`);
+    
+    await db.query('UPDATE usuarios SET rol = ? WHERE id = ?', [rol, id]);
+    
+    console.log('✅ Rol actualizado exitosamente');
+    
+    res.json({ 
+      success: true, 
+      message: 'Rol actualizado exitosamente' 
+    });
+  } catch (error) {
+    console.error('❌ Error al actualizar rol:', error);
     next(error);
   }
 });
