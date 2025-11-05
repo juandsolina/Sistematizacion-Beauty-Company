@@ -3,7 +3,8 @@
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.3",
-    "lucide-react": "^0.544.0"
+    "lucide-react": "^0.544.0",
+    "react-router-dom": "^7.9.5"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.1",
