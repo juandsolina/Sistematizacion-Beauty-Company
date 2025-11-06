@@ -1,5 +1,5 @@
 // frontend/src/pages/Tienda.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react"; // ⬅️ Añadimos useMemo
 import { getProductos } from "../services/catalogo";
 import { resolveImageUrl } from "../services/script";
 import { useCart } from "../context/CartContext";
@@ -20,6 +20,9 @@ export default function Tienda() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // 🎯 NUEVO ESTADO: Para guardar el texto que el usuario escribe
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const { addToCart, setIsCartOpen } = useCart();
 
@@ -35,6 +38,26 @@ export default function Tienda() {
       }
     })();
   }, []);
+
+  // 🎯 LÓGICA DE FILTRADO OPTIMIZADA (useMemo)
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm) {
+      return productos;
+    }
+
+    const lowerCaseSearch = searchTerm.toLowerCase();
+
+    // Filtra si el nombre o la descripción contienen el término de búsqueda
+    return productos.filter(product => 
+      product.nombre.toLowerCase().includes(lowerCaseSearch) ||
+      (product.descripcion && product.descripcion.toLowerCase().includes(lowerCaseSearch))
+    );
+  }, [productos, searchTerm]); // Se recalcula solo cuando cambian los productos o el término de búsqueda
+
+  // Función para manejar el cambio en el input de búsqueda
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
 
   const handleAdd = (p: Producto) => {
     const id = typeof p.id === "string" ? Number(p.id) : p.id;
@@ -70,11 +93,27 @@ export default function Tienda() {
     <section className="tienda-wrap">
       <h1 className="tienda-h1">Nuestra Tienda</h1>
 
+      {/* 🎯 CAMPO DE BÚSQUEDA INTEGRADO */}
+      <div className="tienda-search-container">
+        <input
+          type="text"
+          placeholder="Busca un producto por nombre o descripción..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="tienda-search-input"
+          aria-label="Buscar productos"
+        />
+      </div>
+
+      {/* Muestra mensaje si no hay productos (o si la búsqueda no arroja resultados) */}
       {productos.length === 0 ? (
         <p className="text-center text-gray-400">No hay productos disponibles por el momento.</p>
+      ) : filteredProducts.length === 0 ? (
+         <p className="text-center text-gray-400">No se encontraron productos que coincidan con "{searchTerm}".</p>
       ) : (
         <div className="tienda-grid">
-          {productos.map((p) => {
+          {/* ⬅️ Usamos filteredProducts en lugar de 'productos' */}
+          {filteredProducts.map((p) => { 
             const imgSrc = resolveImageUrl(p.imagen || undefined);
             const hayStock = (p.stock ?? 0) > 0;
 

@@ -1,0 +1,47 @@
+// frontend/src/components/Breadcrumbs/Breadcrumbs.scss
+
+.breadcrumbs-nav {
+    padding: 10px 0;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    color: #6c757d; // Color para el texto inactivo
+}
+
+.breadcrumb-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex; // Muestra los elementos en línea
+    align-items: center;
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+    
+    // Este pseudo-elemento actúa como separador entre los enlaces
+    &:not(:last-child)::after {
+        content: '/'; // O usa un carácter como '>'
+        padding: 0 8px;
+        color: #adb5bd;
+    }
+
+    a {
+        text-decoration: none;
+        color: #007bff; // Color de enlace
+        
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &.is-active {
+        color: #343a40; // Color más oscuro para la página actual
+        font-weight: 600;
+        
+        // Asegura que el último elemento no tenga separador
+        &::after {
+            content: none; 
+        }
+    }
+}

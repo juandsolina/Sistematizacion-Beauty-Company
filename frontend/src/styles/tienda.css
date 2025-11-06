@@ -171,3 +171,40 @@
   pointer-events: auto; /* por si algún reset lo desactiva */
 }
 .tienda-media::after { pointer-events: none; } /* si usas overlays decorativos */
+/* ---------- BÚSQUEDA Y FILTROS ---------- */
+.tienda-search-container {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Centrar el campo de búsqueda */
+    padding: 0 var(--space-x); /* Usar el padding lateral de la página */
+    margin-bottom: 40px; /* Espacio antes del grid */
+}
+
+/* Estilo del Input de Búsqueda */
+.tienda-search-input {
+    width: 100%;
+    max-width: 600px; 
+    padding: 12px 18px;
+    font-size: 1rem;
+    font-weight: 500;
+    
+    /* Colores basados en el tema oscuro */
+    border: 1px solid var(--card-border); 
+    border-radius: 12px;
+    background-color: var(--card-bg); /* Fondo del input similar al de las tarjetas */
+    color: var(--title); /* Texto blanco */
+    
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.tienda-search-input::placeholder {
+    color: var(--muted); /* Placeholder en color gris suave */
+    opacity: 0.7;
+}
+
+.tienda-search-input:focus {
+    outline: none;
+    /* Usar el color de acento de tu marca (rosa) en el foco */
+    border-color: var(--accent); 
+    box-shadow: 0 0 0 3px rgba(240, 8, 152, 0.25); /* Sombra suave rosa */
+}
