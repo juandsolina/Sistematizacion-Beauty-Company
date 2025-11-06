@@ -2,13 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend
-  namespace: susana-shop  # ✅ Actualizado
+  namespace: susana-shop
   labels:
     app: backend
 spec:
   type: ClusterIP
-  selector: 
-    app: backend  # ✅ Debe coincidir con el deployment
+  selector:
+    app: backend # <-- Debe coincidir con el deployment
   ports:
     - name: http
       port: 3000

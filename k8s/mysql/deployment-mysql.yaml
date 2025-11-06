@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
-  namespace: susana-shop  # ✅ Actualizado
+  namespace: susana-shop
 spec:
   replicas: 1
   selector:
@@ -14,26 +14,29 @@ spec:
       containers:
         - name: mysql
           image: mysql:8.0
-          ports: 
+          ports:
             - containerPort: 3306
               name: mysql
           env:
             - name: MYSQL_ROOT_PASSWORD
-              valueFrom: 
-                secretKeyRef: 
+              valueFrom:
+                secretKeyRef:
                   name: mysql-secret
                   key: root-password
+            # --- ¡CAMBIO CLAVE! ---
+            # Debe coincidir con el DB_NAME del configmap-app.yaml
             - name: MYSQL_DATABASE
-              value: "tienda"
+              value: "susana_shop"
+            # ---------------------
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets  # ✅ Usar el mismo secret
+                  name: app-secrets # Usa el mismo secret del backend
                   key: DB_USER
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets  # ✅ Usar el mismo secret
+                  name: app-secrets # Usa el mismo secret del backend
                   key: DB_PASSWORD
           volumeMounts:
             - name: data
@@ -41,7 +44,6 @@ spec:
             - name: init
               mountPath: /docker-entrypoint-initdb.d/init.sql
               subPath: init.sql
-          # ✅ Health checks añadidos
           livenessProbe:
             exec:
               command:
@@ -64,7 +66,7 @@ spec:
             timeoutSeconds: 3
       volumes:
         - name: data
-          persistentVolumeClaim: 
+          persistentVolumeClaim:
             claimName: mysql-pvc
         - name: init
           configMap:
