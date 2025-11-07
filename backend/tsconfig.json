@@ -11,7 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "types": ["node"],
+    "types": ["node", "jest"],  // ← AGREGA "jest" AQUÍ
     "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*.ts"],
