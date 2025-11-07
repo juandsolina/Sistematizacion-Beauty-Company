@@ -6,16 +6,42 @@ import '../../styles/admin.css';
 // Interfaz para el Pedido
 interface Pedido {
   id: number;
-  cliente_nombre: string; // O cliente_id
+  cliente_nombre: string;
   fecha: string;
   total: number;
   estado: 'pendiente' | 'enviado' | 'completado' | 'cancelado';
 }
 
-// Si tu API devuelve { pedidos: [...] }
 interface ApiResponse {
   pedidos: Pedido[];
 }
+
+// ✅ FUNCIÓN HELPER PARA FORMATEAR FECHAS DE FORMA SEGURA
+const formatearFecha = (fecha: string | null | undefined): string => {
+  // Si la fecha es null, undefined o vacía
+  if (!fecha) {
+    return 'Sin fecha';
+  }
+
+  try {
+    const date = new Date(fecha);
+    
+    // Verificar si la fecha es válida
+    if (isNaN(date.getTime())) {
+      return 'Fecha inválida';
+    }
+
+    // Formatear la fecha en español
+    return date.toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  } catch (error) {
+    console.error('Error al formatear fecha:', error);
+    return 'Error en fecha';
+  }
+};
 
 const VerPedidos: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -32,7 +58,6 @@ const VerPedidos: React.FC = () => {
           throw new Error('No autorizado. Token no encontrado.');
         }
 
-        // Endpoint de tu backend para obtener pedidos (DEBES CREARLO)
         const response = await fetch('/api/admin/pedidos', {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -44,6 +69,10 @@ const VerPedidos: React.FC = () => {
         }
 
         const data: ApiResponse = await response.json();
+        
+        // 🐛 DEBUG: Ver qué datos llegan del backend
+        console.log('📦 Pedidos recibidos:', data.pedidos);
+        
         setPedidos(data.pedidos);
 
       } catch (err: any) {
@@ -62,13 +91,11 @@ const VerPedidos: React.FC = () => {
 
   const handleVerDetalles = (id: number) => {
     console.log(`Ver detalles del pedido con ID: ${id}`);
-    // Lógica para navegar a una página de detalle
     // navigate(`/admin/pedidos/${id}`);
   };
 
   const handleActualizarEstado = (id: number) => {
     console.log(`Actualizar estado del pedido con ID: ${id}`);
-    // Lógica para mostrar un <select> o modal y actualizar el estado
   };
 
   if (loading) {
@@ -102,11 +129,14 @@ const VerPedidos: React.FC = () => {
               pedidos.map((pedido) => (
                 <tr key={pedido.id}>
                   <td>#{pedido.id}</td>
-                  <td>{pedido.cliente_nombre}</td>
-                  <td>{new Date(pedido.fecha).toLocaleDateString()}</td>
-                  <td>${pedido.total.toLocaleString()}</td>
+                  <td>{pedido.cliente_nombre || 'Cliente desconocido'}</td>
+                  {/* ✅ AQUÍ ESTÁ LA CORRECCIÓN */}
+                  <td>{formatearFecha(pedido.fecha)}</td>
+                  <td>${pedido.total?.toLocaleString() || '0'}</td>
                   <td>
-                    <span className={`estado-${pedido.estado}`}>{pedido.estado}</span>
+                    <span className={`estado-${pedido.estado}`}>
+                      {pedido.estado || 'pendiente'}
+                    </span>
                   </td>
                   <td>
                     <button 
