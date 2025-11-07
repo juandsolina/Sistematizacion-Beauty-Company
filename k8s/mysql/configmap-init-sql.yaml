@@ -3,65 +3,79 @@ kind: ConfigMap
 metadata:
   name: mysql-init-sql
   namespace: susana-shop
-  labels:
-    app: mysql
 data:
   init.sql: |
     SET NAMES utf8mb4;
     SET character_set_client = utf8mb4;
+    SET FOREIGN_KEY_CHECKS = 0;
 
-    -- 1. Crear la base de datos si no existe (¡Actualizado!)
-    CREATE DATABASE IF NOT EXISTS susana_shop
-      CHARACTER SET utf8mb4
-      COLLATE utf8mb4_unicode_ci;
-
-    -- 2. Seleccionar la base de datos para usarla (¡Actualizado!)
+    -- Usar la base de datos susana_shop (ya creada por MYSQL_DATABASE)
     USE susana_shop;
 
-    -- 3. Crear tabla de usuarios
-    CREATE TABLE IF NOT EXISTS usuarios (
+    -- Eliminar tablas existentes si las hay
+    DROP TABLE IF EXISTS detalle_pedidos;
+    DROP TABLE IF EXISTS pedidos;
+    DROP TABLE IF EXISTS carrito;
+    DROP TABLE IF EXISTS productos;
+    DROP TABLE IF EXISTS usuarios;
+
+    -- ============================================
+    -- CREAR TABLAS
+    -- ============================================
+
+    -- Tabla de usuarios
+    CREATE TABLE usuarios (
         id INT AUTO_INCREMENT PRIMARY KEY,
         nombre VARCHAR(100) NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
-        rol ENUM('admin','cliente') DEFAULT 'cliente',
-        fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+        rol ENUM('admin', 'cliente') DEFAULT 'cliente',
+        fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_email (email),
+        INDEX idx_rol (rol)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-    -- 4. Crear tabla de productos
-    CREATE TABLE IF NOT EXISTS productos (
+    -- Tabla de productos
+    CREATE TABLE productos (
         id INT AUTO_INCREMENT PRIMARY KEY,
         nombre VARCHAR(150) NOT NULL,
         descripcion TEXT,
         precio DECIMAL(10,2) NOT NULL,
         stock INT DEFAULT 0,
         imagen VARCHAR(255),
-        creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+        activo BOOLEAN DEFAULT TRUE,
+        creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_nombre (nombre),
+        INDEX idx_precio (precio),
+        INDEX idx_activo (activo)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-    -- 5. Crear tabla de carrito
-    CREATE TABLE IF NOT EXISTS carrito (
+    -- Tabla de carrito
+    CREATE TABLE carrito (
         id INT AUTO_INCREMENT PRIMARY KEY,
         usuario_id INT NOT NULL,
         producto_id INT NOT NULL,
-        cantidad INT NOT NULL,
+        cantidad INT NOT NULL DEFAULT 1,
         agregado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-        FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
-    );
+        FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_user_product (usuario_id, producto_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-    -- 6. Crear tabla de pedidos
-    CREATE TABLE IF NOT EXISTS pedidos (
+    -- Tabla de pedidos
+    CREATE TABLE pedidos (
         id INT AUTO_INCREMENT PRIMARY KEY,
         usuario_id INT NOT NULL,
         total DECIMAL(10,2) NOT NULL,
-        estado ENUM('pendiente','pagado','enviado','completado','cancelado') DEFAULT 'pendiente',
+        estado ENUM('pendiente', 'pagado', 'enviado', 'completado', 'cancelado') DEFAULT 'pendiente',
         fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-    );
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+        INDEX idx_estado (estado),
+        INDEX idx_fecha (fecha_pedido)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-    -- 7. Crear tabla detalle de pedidos
-    CREATE TABLE IF NOT EXISTS detalle_pedidos (
+    -- Tabla detalle de pedidos
+    CREATE TABLE detalle_pedidos (
         id INT AUTO_INCREMENT PRIMARY KEY,
         pedido_id INT NOT NULL,
         producto_id INT NOT NULL,
@@ -69,23 +83,69 @@ data:
         precio DECIMAL(10,2) NOT NULL,
         FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
         FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
-    );
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-    -- 8. Insertar datos
-    -- Insertar usuario administrador inicial (contraseña bcrypt de "admin123")
+    -- ============================================
+    -- INSERTAR DATOS INICIALES
+    -- ============================================
+
+    -- Usuario administrador (password: admin123)
     INSERT INTO usuarios (nombre, email, password, rol) VALUES
-    ('Administrador', 'admin@tienda.com', '$2b$10$VEEsl9MyJrFgO6Y6m/RcaOrp6kR.NxQPcGjTfQkLM5q8vO0C6pA8e', 'admin')
-    ON DUPLICATE KEY UPDATE email = email;
+    ('Administrador', 'admin@tienda.com', '$2b$10$VEEsl9MyJrFgO6Y6m/RcaOrp6kR.NxQPcGjTfQkLM5q8vO0C6pA8e', 'admin');
 
-    -- Insertar algunos productos de ejemplo
-    INSERT INTO productos (nombre, descripcion, precio, stock, imagen) VALUES
-    ('Pulidor de Uñas Profesional', 'Pulidor eléctrico de uñas con accesorios y cargador incluido.', 220.00, 15, 'uploads/master.png'),
-    ('Cepillos Descartables', 'Cepillos desechables para uso cosmético y de pestañas.', 25.00, 100, 'uploads/mcepillos.png'),
-    ('Olla de Cera Eléctrica', 'Olla eléctrica portátil para derretir cera depilatoria.', 120.00, 20, 'uploads/ollita-de-cera.png'),
-    ('Lámpara LED de Escritorio', 'Lámpara LED flexible recargable para escritorio.', 60.00, 30, 'uploads/presson.png'),
-    ('Pulidor de Uñas Premium', 'Pulidor profesional de alta potencia para manicure y pedicure.', 350.00, 10, 'uploads/pulidor.png'),
-    ('Pulidor Portátil Rosa', 'Pulidor recargable de uñas en formato compacto.', 180.00, 25, 'uploads/pulidorp2.png'),
-    ('Pestañas Venus', 'Extensiones de pestañas estilo natural marca Venus.', 90.00, 40, 'uploads/venus.png'),
-    ('Cinta Adhesiva para Pestañas', 'Rollo de cinta adhesiva especial para extensiones de pestañas.', 15.00, 200, 'uploads/vpestanas.png'),
-    ('Mini Ventilador Portátil', 'Ventilador portátil de mano recargable en varios colores.', 75.00, 35, 'uploads/vpestanas2.png')
-    ON DUPLICATE KEY UPDATE nombre = nombre;
+    -- Usuarios clientes de ejemplo (password: admin123)
+    INSERT INTO usuarios (nombre, email, password, rol) VALUES
+    ('Juan Pérez', 'juan@example.com', '$2b$10$VEEsl9MyJrFgO6Y6m/RcaOrp6kR.NxQPcGjTfQkLM5q8vO0C6pA8e', 'cliente'),
+    ('María García', 'maria@example.com', '$2b$10$VEEsl9MyJrFgO6Y6m/RcaOrp6kR.NxQPcGjTfQkLM5q8vO0C6pA8e', 'cliente'),
+    ('Carlos López', 'carlos@example.com', '$2b$10$VEEsl9MyJrFgO6Y6m/RcaOrp6kR.NxQPcGjTfQkLM5q8vO0C6pA8e', 'cliente');
+
+    -- Productos de belleza y cosméticos (activos)
+    INSERT INTO productos (nombre, descripcion, precio, stock, imagen, activo) VALUES
+    ('Pulidor de Uñas Profesional', 'Pulidor eléctrico de uñas con accesorios y cargador incluido. Ideal para uso profesional en salones de belleza.', 220.00, 15, 'uploads/master.png', TRUE),
+    ('Cepillos Descartables', 'Pack de 50 cepillos desechables para uso cosmético y aplicación de pestañas. Material suave y seguro.', 25.00, 100, 'uploads/mcepillos.png', TRUE),
+    ('Olla de Cera Eléctrica', 'Olla eléctrica portátil para derretir cera depilatoria. Control de temperatura ajustable y apagado automático.', 120.00, 20, 'uploads/ollita-de-cera.png', TRUE),
+    ('Lámpara LED de Escritorio', 'Lámpara LED flexible recargable para escritorio. Perfecta para trabajo de detalle en manicure y maquillaje.', 60.00, 30, 'uploads/presson.png', TRUE),
+    ('Pulidor de Uñas Premium', 'Pulidor profesional de alta potencia para manicure y pedicure. Incluye 6 cabezales intercambiables.', 350.00, 10, 'uploads/pulidor.png', TRUE),
+    ('Pulidor Portátil Rosa', 'Pulidor recargable de uñas en formato compacto. Perfecto para retoques rápidos. Batería de larga duración.', 180.00, 25, 'uploads/pulidorp2.png', TRUE),
+    ('Pestañas Venus', 'Extensiones de pestañas estilo natural marca Venus. Material premium de seda sintética. Volumen medio.', 90.00, 40, 'uploads/venus.png', TRUE),
+    ('Cinta Adhesiva para Pestañas', 'Rollo de cinta adhesiva especial para extensiones de pestañas. Hipoalergénica y de fácil remoción.', 15.00, 200, 'uploads/vpestanas.png', TRUE),
+    ('Mini Ventilador Portátil', 'Ventilador portátil de mano recargable en varios colores. USB recargable. Ideal para secar productos rápidamente.', 75.00, 35, 'uploads/vpestanas2.png', TRUE);
+
+    -- Productos desactivados temporalmente
+    INSERT INTO productos (nombre, descripcion, precio, stock, imagen, activo) VALUES
+    ('Kit Completo de Manicure', 'Set profesional con cortauñas, limas, empujador de cutículas y más. Estuche de cuero incluido.', 140.00, 18, 'uploads/kit-manicure.png', FALSE),
+    ('Gel UV para Uñas', 'Gel UV de alta calidad en diversos colores. Secado rápido bajo lámpara UV/LED. 15ml.', 45.00, 60, 'uploads/gel-uv.png', FALSE),
+    ('Removedor de Esmalte', 'Removedor de esmalte sin acetona. Fórmula suave con vitamina E. 250ml.', 28.00, 80, 'uploads/removedor.png', FALSE),
+    ('Base Coat Profesional', 'Base coat de larga duración. Protege las uñas naturales y mejora la adherencia del esmalte.', 35.00, 50, 'uploads/base-coat.png', FALSE),
+    ('Top Coat Brillo', 'Top coat de secado rápido con acabado ultra brillante. Protección duradera hasta 14 días.', 38.00, 50, 'uploads/top-coat.png', FALSE),
+    ('Lámpara UV/LED 48W', 'Lámpara profesional UV/LED de 48W. Secado rápido en 30 segundos. Temporizador digital incluido.', 280.00, 12, 'uploads/lampara-uv.png', FALSE);
+
+    -- Items en carrito de ejemplo
+    INSERT INTO carrito (usuario_id, producto_id, cantidad) VALUES
+    (2, 1, 1),  -- Juan: Pulidor de Uñas
+    (2, 2, 2),  -- Juan: 2 packs de Cepillos
+    (3, 7, 1),  -- María: Pestañas Venus
+    (3, 8, 3);  -- María: 3 Cintas Adhesivas
+
+    -- Pedidos de ejemplo
+    INSERT INTO pedidos (usuario_id, total, estado) VALUES
+    (2, 270.00, 'completado'),
+    (3, 135.00, 'enviado'),
+    (4, 630.00, 'pendiente');
+
+    -- Detalle de pedidos
+    INSERT INTO detalle_pedidos (pedido_id, producto_id, cantidad, precio) VALUES
+    -- Pedido 1 (Juan)
+    (1, 1, 1, 220.00),
+    (1, 2, 2, 25.00),
+    -- Pedido 2 (María)
+    (2, 7, 1, 90.00),
+    (2, 8, 3, 15.00),
+    -- Pedido 3 (Carlos)
+    (3, 5, 1, 350.00),
+    (3, 15, 1, 280.00);
+
+    SET FOREIGN_KEY_CHECKS = 1;
+
+    -- Verificación
+    SELECT 'Base de datos inicializada correctamente' AS status;
